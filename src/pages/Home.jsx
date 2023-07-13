@@ -13,6 +13,7 @@ import banner from "../assets/images/banner.png";
 import { useDispatch } from "react-redux";
 import { BASE_URL } from "constant/config";
 import { listProduct } from "redux/actions/product.actions";
+import { TAG } from "common/common";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -22,29 +23,16 @@ export default function Home() {
   useEffect(() => {
     dispatch(listProduct());
   }, [dispatch]);
+  const fetchData = async (tag, setData) => {
+    const res = await fetch(`${BASE_URL}/products/list?limit=8&tag=${tag}`);
+    const data = await res.json();
+    setData(data);
+  };
+
   useEffect(() => {
-    const fetchdata = async () => {
-      const res = await fetch(`${BASE_URL}/products/list?limit=8&tag=popular`);
-      const data = await res.json();
-      setListPopular(data);
-    };
-    fetchdata();
-  }, [dispatch]);
-  useEffect(() => {
-    const fetchdata = async () => {
-      const res = await fetch(`${BASE_URL}/products/list?limit=8&tag=new`);
-      const data = await res.json();
-      setListTagNew(data);
-    };
-    fetchdata();
-  }, [dispatch]);
-  useEffect(() => {
-    const fetchdata = async () => {
-      const res = await fetch(`${BASE_URL}/products/list?limit=8&tag=hot`);
-      const data = await res.json();
-      setListTagHot(data);
-    };
-    fetchdata();
+    fetchData(`${TAG.POPULAR}`, setListPopular);
+    fetchData(`${TAG.NEW}`, setListTagNew);
+    fetchData(`${TAG.HOT}`, setListTagHot);
   }, [dispatch]);
   return (
     <Helmet title="Trang chủ">

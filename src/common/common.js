@@ -16,3 +16,8 @@ export const formatMoney = (input = 0) =>
     style: "currency",
     currency: "Vnd",
   });
+export const TAG = {
+  HOT: "hot",
+  POPULAR: "popular",
+  NEW: "new",
+};

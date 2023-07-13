@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router";
 // import Button from './Button';
 import { toast } from "react-toastify";
@@ -17,6 +17,9 @@ const ProductView = (props) => {
   const [descriptionExpand, setDescriptionExpand] = useState(false);
   const [color, setColor] = useState(undefined);
   const [size, setSize] = useState(undefined);
+
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [selectedItem, setSelectedItem] = useState();
   const check = () => {
@@ -34,6 +37,9 @@ const ProductView = (props) => {
     }
     return true;
   };
+  // useEffect(() => {
+  //   setSelectedItem({});
+  // }, [selectedColor, selectedSize]);
   const handleBuy = () => {
     if (!isEmpty(selectedItem)) {
       addToLocal("cart", selectedItem);
@@ -147,6 +153,13 @@ const ProductView = (props) => {
                   <>
                     <Button
                       // className={`circle bg-${item.color.code}`}
+                      style={{
+                        backgroundColor: item.color?.name,
+                        border:
+                          selectedItem?.version.color?.name === item.color?.name
+                            ? "2px solid yellow"
+                            : "none",
+                      }}
                       type={
                         selectedItem?.version.color?.name === item.color?.name
                           ? "primary"
@@ -156,7 +169,9 @@ const ProductView = (props) => {
                         setSelectedItem({ version: item, product: product })
                       }
                     >
-                      {item.color.name}
+                      {item?.color?.name}
+                      {selectedItem?.version.color?.name ===
+                        item.color?.name && <span>&#10004;</span>}
                     </Button>
                   </>
                 );
