@@ -3,14 +3,14 @@ import mainNav from "assets/fake-data/mainNav";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/images/Logo-2.png";
-import { getFromLocal } from "common/local-storage";
 import { isEmpty } from "lodash";
-
+import emitter from "utils/eventEmitter";
 const Header = (props) => {
   const { pathname } = useLocation();
   const activeNav = mainNav.findIndex((e) => e.path === pathname);
   const state = useSelector((state) => state);
-  const [totalProduct, setTotalProduct] = useState();
+  const [cartQuantity, setCartQuantity] = useState(0);
+
   const headerRef = useRef(null);
   useEffect(() => {
     window.addEventListener("scroll", () => {
@@ -28,14 +28,14 @@ const Header = (props) => {
     };
   }, []);
   useEffect(() => {
-    setTotalProduct(
-      getFromLocal("cart")?.reduce(
-        (total, item) => total + item.version.currentQuantity,
-        0
-      )
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getFromLocal("cart")]);
+    const updateCartQuantity = (newQuantity) => {
+      setCartQuantity(newQuantity);
+    };
+    emitter.on("cartQuantityChange", updateCartQuantity);
+    return () => {
+      emitter.removeListener("cartQuantityChange", updateCartQuantity);
+    };
+  }, []);
   const menuLeft = useRef(null);
 
   const menuToggle = () => menuLeft.current?.classList.toggle("active");
@@ -77,7 +77,7 @@ const Header = (props) => {
                 </Link>
               </div>
               <div className="header__menu__item header__menu__right__item__cart__length">
-                <span>{totalProduct}</span>
+                <span>{cartQuantity > 0 ? cartQuantity : 0}</span>
               </div>
             </div>
             <div className="header__menu__item header__menu__right__item">

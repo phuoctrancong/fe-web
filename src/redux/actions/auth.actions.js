@@ -3,6 +3,7 @@ import { notification } from "antd";
 import { history } from "helper/history";
 import { toast } from "react-toastify";
 import {
+  detail,
   getProfileService,
   loginService,
   registerService,
@@ -113,6 +114,23 @@ export const changePassword = (params, onSuccess) => {
         type: types.UPDATE,
       });
       onSuccess();
+    }
+  };
+};
+export const detailUserAction = (id) => {
+  return async (dispatch) => {
+    try {
+      const response = await detail(id);
+      dispatch({
+        type: types.GET_DETAIL_USER,
+        data: response.data,
+      });
+    } catch (error) {
+      console.log(error?.message || error);
+      notification.open({
+        message: "Thất bại",
+        description: error?.message || error,
+      });
     }
   };
 };

@@ -70,16 +70,6 @@ const EditProfileUser = () => {
                     <option value={1}>Nữ</option>
                   </select>
                 </div>
-                <div className="user__content__info__form__group">
-                  <label htmlFor="">Địa Chỉ</label>
-                  <select name="select" id="">
-                    {user?.addresses?.map((item) => (
-                      <>
-                        <option value={item?.address}>{item?.address}</option>
-                      </>
-                    ))}
-                  </select>
-                </div>
               </div>
               <Button
                 size="sm"

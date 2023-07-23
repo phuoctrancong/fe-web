@@ -2,12 +2,16 @@
 import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router";
 // import Button from './Button';
+import { listSize } from "redux/actions/size.actions";
 import { toast } from "react-toastify";
 import { ROOT_URL } from "constant/config";
-import { isEmpty, map, uniq } from "lodash";
+import { isEmpty } from "lodash";
 import { addToLocal } from "common/local-storage";
 import { formatMoney } from "common/common";
 import { Button } from "antd";
+import emitter from "utils/eventEmitter";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const ProductView = (props) => {
   const { product, isLoading, setIsLoading } = props;
@@ -15,21 +19,25 @@ const ProductView = (props) => {
     `${ROOT_URL}/${product?.productImages[0]?.url}`
   );
   const [descriptionExpand, setDescriptionExpand] = useState(false);
-  const [color, setColor] = useState(undefined);
-  const [size, setSize] = useState(undefined);
-
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState(undefined);
+  const [selectedSize, setSelectedSize] = useState(undefined);
   const [quantity, setQuantity] = useState(1);
   const [selectedItem, setSelectedItem] = useState();
+  const [filterListSizes, setSizes] = useState([]);
+  const [inventory, setInventory] = useState(0);
+  const dispatch = useDispatch();
+  const sizeList = useSelector((state) => state.size);
+  useEffect(() => {
+    dispatch(listSize());
+  }, [dispatch]);
   const check = () => {
-    if (color === undefined) {
+    if (selectedColor === undefined) {
       toast.warning("Vui lòng chọn màu sắc !", {
         position: toast.POSITION.TOP_RIGHT,
       });
       return false;
     }
-    if (size === undefined) {
+    if (selectedSize === undefined) {
       toast.warning("Vui lòng chọn kích cỡ !", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -37,22 +45,51 @@ const ProductView = (props) => {
     }
     return true;
   };
-  // useEffect(() => {
-  //   setSelectedItem({});
-  // }, [selectedColor, selectedSize]);
-  const handleBuy = () => {
-    if (!isEmpty(selectedItem)) {
-      addToLocal("cart", selectedItem);
-      toast.success("Thêm vào giỏ hàng thành công");
-    } else {
-      check();
+  const handleChangeColor = (item) => {
+    setSelectedColor({
+      version: item,
+      color: item.color,
+    });
+    const filterSizes = product.productVersions.filter(
+      (e) => e.color?.id === item.color?.id
+    );
+    if (!isEmpty(filterSizes)) {
+      setSizes(filterSizes);
     }
   };
+  const handleChangeSize = (item) => {
+    setSelectedSize({
+      version: item,
+      size: item.size,
+      product: product,
+    });
+  };
+
+  useEffect(() => {
+    if (selectedSize && selectedColor) {
+      const dataVersion = selectedSize?.version;
+      const version = {
+        ...dataVersion,
+        currentQuantity: quantity,
+      };
+      setInventory(dataVersion?.stockQuantity);
+      setSelectedItem({ item: version, product: selectedSize?.product });
+    }
+  }, [selectedColor, selectedSize, quantity]);
   const updateQuantity = (type) => {
     if (type === "plus") {
       setQuantity(quantity + 1);
     } else {
       setQuantity(quantity - 1 < 1 ? 1 : quantity - 1);
+    }
+  };
+  const handleBuy = () => {
+    if (!isEmpty(selectedItem)) {
+      addToLocal("cart", selectedItem);
+      emitter.emit("cartQuantityChange", selectedItem.item.currentQuantity);
+      toast.success("Thêm vào giỏ hàng thành công");
+    } else {
+      check();
     }
   };
 
@@ -134,44 +171,30 @@ const ProductView = (props) => {
           )}
           <div className="product__info__item">
             <div className="product__info__item__title">
-              Màu sắc : {selectedItem?.version.color.name}
+              Màu sắc :{selectedColor?.color.name}
             </div>
             <div className="product__info__item__list">
-              {product?.productVersions?.map((item, index) => {
+              {product?.productVersionsMap.map((item) => {
                 return (
-                  // <div
-                  // 	key={index}
-                  // 	className={`product__info__item__list__item ${
-                  // 		color !== item.color.code ? '' : 'active'
-                  // 	}`}
-                  // 	onClick={() =>
-                  // 		setSelectedItem({ version: item, product: product })
-                  // 	}
-                  // >
-                  // 	<div className={`circle bg-${item.color.code}`}></div>
-                  // </div>
                   <>
                     <Button
-                      // className={`circle bg-${item.color.code}`}
                       style={{
-                        backgroundColor: item.color?.name,
+                        backgroundColor: item?.color?.name,
                         border:
-                          selectedItem?.version.color?.name === item.color?.name
-                            ? "2px solid yellow"
+                          selectedColor?.color?.name === item.color?.name &&
+                          selectedColor?.version?.id === item.id
+                            ? "2px solid white"
                             : "none",
                       }}
                       type={
-                        selectedItem?.version.color?.name === item.color?.name
+                        selectedColor?.color?.name === item.color?.name &&
+                        selectedColor?.version?.id === item.id
                           ? "primary"
                           : "danger"
                       }
-                      onClick={() =>
-                        setSelectedItem({ version: item, product: product })
-                      }
+                      onClick={() => handleChangeColor(item)}
                     >
                       {item?.color?.name}
-                      {selectedItem?.version.color?.name ===
-                        item.color?.name && <span>&#10004;</span>}
                     </Button>
                   </>
                 );
@@ -180,47 +203,48 @@ const ProductView = (props) => {
           </div>
           <div className="product__info__item">
             <div className="product__info__item__title">
-              Kích cỡ: {selectedItem?.version.size.name}
+              Kích cỡ:
+              {selectedSize?.size.name}
             </div>
             <div className="product__info__item__list">
-              {product?.productVersions?.map((item, index) => {
-                return (
-                  // <div
-                  // 	key={index}
-                  // 	className={`product__info__item__list__item ${
-                  // 		size === item.size.name ? 'active' : ''
-                  // 	}`}
-                  // 	onClick={() =>
-                  // 		setSelectedItem({ version: item, product: product })
-                  // 	}
-                  // >
-                  // 	{/* <span
-                  // 		className={`product__info__item__list__item ${
-                  // 			size === item.size.name ? 'active' : ''
-                  // 		}`}
-                  // 		onClick={() => setSize(item.size.name)}
-                  // 	></span> */}
-                  // 	<div className='product__info__item__list__item__size'>
-                  // 		{item.size.name}
-                  // 	</div>
-                  // </div>
-                  <>
-                    <Button
-                      key={index}
-                      type={
-                        selectedItem?.version.size?.name === item.size.name
-                          ? "primary"
-                          : "danger"
-                      }
-                      onClick={() =>
-                        setSelectedItem({ version: item, product: product })
-                      }
-                    >
-                      {item.size.name}
-                    </Button>
-                  </>
-                );
-              })}
+              {!isEmpty(filterListSizes)
+                ? filterListSizes?.map((item, index) => {
+                    return (
+                      <>
+                        <Button
+                          key={index}
+                          style={{
+                            border:
+                              selectedSize?.size?.name === item.size.name &&
+                              selectedSize?.version?.id === item.id
+                                ? "2px solid yellow"
+                                : "none",
+                          }}
+                          type={
+                            selectedSize?.size.name === item.size.name
+                              ? "primary"
+                              : "danger"
+                          }
+                          onClick={() => handleChangeSize(item)}
+                        >
+                          {item.size.name}
+                          {selectedSize?.size.name === item.size?.name &&
+                            selectedSize?.version?.id === item.id && (
+                              <span>&#10004;</span>
+                            )}
+                        </Button>
+                      </>
+                    );
+                  })
+                : sizeList?.items?.map((item, index) => {
+                    return (
+                      <>
+                        <Button type={"danger"} key={index}>
+                          {item?.name}
+                        </Button>
+                      </>
+                    );
+                  })}
             </div>
           </div>
           <div className="product__info__item">
@@ -246,7 +270,7 @@ const ProductView = (props) => {
           <div className="product__info__item">
             <div className="product__info__item__title">
               Kho:
-              {selectedItem ? selectedItem?.version.quantity : "0"}
+              {selectedColor && selectedSize ? inventory : "0"}
             </div>
           </div>
           <div className="product__info__item">

@@ -12,12 +12,13 @@ import { listColor } from "redux/actions/color.actions";
 import { listSize } from "redux/actions/size.actions";
 import SearchBar from "components/SearchBar";
 import SliderProton from "components/SliderProton";
-import { Pagination } from "@mui/material";
 import EmptyView from "components/EmptyView";
 import ProductSort from "components/Product-sort";
 import NavbarCategory from "components/NavbarCategory";
 import { isEmpty } from "lodash";
-
+import { Collapse } from "antd";
+import { FILTER_PRICE } from "common/common";
+const { Panel } = Collapse;
 const Catalog = () => {
   const dispatch = useDispatch();
   const [selectedPrice, setSelectedPrice] = useState([100000, 850000]);
@@ -25,12 +26,10 @@ const Catalog = () => {
   const categoryList = useSelector((state) => state.category);
   const colorList = useSelector((state) => state.color);
   const sizeList = useSelector((state) => state.size);
-  const [page, setPage] = useState(1);
   const [resultsFound, setResultsFound] = useState(true);
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState({ limit: 8 });
   const [products, setProducts] = useState([]);
-
   const initFilter = {
     categories: [],
     colors: [],
@@ -58,7 +57,7 @@ const Catalog = () => {
         case "CATEGORY":
           setFilter({
             ...filter,
-            categories: [...filter.categories, item.slug],
+            categories: [...filter.categories, item.id],
           });
           break;
         case "COLOR":
@@ -72,7 +71,7 @@ const Catalog = () => {
     } else {
       switch (type) {
         case "CATEGORY":
-          const newCategory = filter.categories.filter((e) => e !== item.slug);
+          const newCategory = filter.categories.filter((e) => e !== item.id);
           setFilter({ ...filter, categories: newCategory });
           break;
         case "COLOR":
@@ -101,7 +100,7 @@ const Catalog = () => {
   const updateProducts = useCallback(() => {
     let temp = productList;
     if (filter.categories.length > 0) {
-      temp = temp.filter((e) => filter.categories.includes(e.category?.slug));
+      temp = temp.filter((e) => filter.categories.includes(e.subCategory?.id));
     }
 
     if (filter.colors.length > 0) {
@@ -145,19 +144,9 @@ const Catalog = () => {
     updateProducts();
   }, [updateProducts, productList, selectedPrice, searchInput, resultsFound]);
   const filterRef = useRef(null);
-
   const showHideFilter = () => filterRef.current?.classList.toggle("active");
-
   return (
     <Helmet title="Sản phẩm">
-      {/* <div className="catalog__top">
-        <div className="catalog__search">
-          <SearchBar
-            value={searchInput}
-            changeInput={(e) => setSearchInput(e.target.value)}
-          />
-        </div>
-      </div> */}
       <div className="catalog">
         <div className="catalog__filter" ref={filterRef}>
           <div className="catalog__search">
@@ -177,27 +166,40 @@ const Catalog = () => {
             <div className="catalog__filter__widget__title">
               danh mục sản phẩm
             </div>
-            {/* {listCategory_v1?.map((item, index) => (
-							<NavbarCategory items={item} key={index} />
-						))} */}
-            {/* <NavbarCategory items={listCategory_v1} /> */}
             <div className="catalog__filter__widget__content">
-              {categoryList?.items?.length
-                ? categoryList?.items?.map((item, index) => (
-                    <div
-                      key={index}
-                      className="catalog__filter__widget__content__item"
+              {categoryList?.items.map((item) => {
+                return (
+                  <Collapse
+                    bordered={false}
+                    defaultActiveKey={[item.id.toString()]} // Use the categoryId as the defaultActiveKey
+                    onChange={() => {
+                      dispatch(listProduct({ categoryId: item.id }));
+                    }}
+                  >
+                    <Panel
+                      header={<span>{item.name}</span>}
+                      key={item.id.toString()} // Use the categoryId as the key
+                      style={{
+                        paddingLeft: 24,
+                        paddingTop: 10,
+                        cursor: "pointer",
+                      }}
                     >
-                      <CheckBox
-                        label={item.name}
-                        onChange={(input) =>
-                          filterSelect("CATEGORY", input.checked, item)
-                        }
-                        checked={filter.categories.includes(item?.slug)}
-                      />
-                    </div>
-                  ))
-                : ""}
+                      {item.subCategories?.map((itemChild) => (
+                        <div className="catalog__filter__widget__content__item">
+                          <CheckBox
+                            label={itemChild.name}
+                            onChange={(input) =>
+                              filterSelect("CATEGORY", input.checked, itemChild)
+                            }
+                            checked={filter.categories.includes(itemChild?.id)}
+                          />
+                        </div>
+                      ))}
+                    </Panel>
+                  </Collapse>
+                );
+              })}
             </div>
           </div>
           <div className="catalog__filter__widget">
@@ -208,6 +210,7 @@ const Catalog = () => {
                     <div
                       key={index}
                       className="catalog__filter__widget__content__item"
+                      style={{ marginBottom: "13px" }}
                     >
                       <CheckBox
                         label={item.name}
@@ -242,21 +245,30 @@ const Catalog = () => {
                 : ""}
             </div>
           </div>
+          <div className="catalog__filter__widget">
+            <div className="catalog__filter__widget__title">Khoảng giá:</div>
+            <div className="catalog__filter__widget__content">
+              {FILTER_PRICE.map((itemPrice) => (
+                <>
+                  <div className="catalog__filter__widget__content__item">
+                    <CheckBox
+                      label={itemPrice.label}
+                      // onChange={(input) =>
+                      //   filterSelect("SIZE", input.checked, item)
+                      // }
+                      // checked={filter.sizes.includes(item.name)}
+                    />
+                  </div>
+                </>
+              ))}
+            </div>
+          </div>
 
           <div className="catalog__filter__widget">
             <div className="catalog__filter__widget__content">
               <Button size="sm" onClick={clearFilter}>
                 xóa bộ lọc
               </Button>
-            </div>
-          </div>
-          <div className="catalog___filter__price">
-            <div className="catalog__filter__price__title">Khoảng giá:</div>
-            <div className="catalog___filter__price__item">
-              <SliderProton
-                value={selectedPrice}
-                changePrice={handleChangePrice}
-              />
             </div>
           </div>
         </div>

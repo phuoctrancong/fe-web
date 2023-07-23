@@ -1,12 +1,14 @@
-.catalog{
-  @include flex(flex-start,flex-start);
-
+.catalog {
+  @include flex(flex-start, flex-start);
 
   @include tablet {
     flex-direction: column;
   }
-  &__filter{
-    width:25%;
+  .ant-collapse-content {
+    background: white;
+  }
+  &__filter {
+    width: 25%;
 
     @include tablet {
       width: max-content;
@@ -18,58 +20,59 @@
       z-index: 100;
       box-shadow: $box-shadow;
       transform: translateX(-100%);
-      transition: transform .3s ease;
+      transition: transform 0.3s ease;
     }
 
-    @include mobile{
+    @include mobile {
       top: $header-mobile-height;
       padding: 0 10px;
     }
 
-    &.active{
+    &.active {
       transform: translateX(0);
     }
 
-    &__price{
+    &__price {
       margin-bottom: 20px;
 
-      &__title{
+      &__title {
         font-size: 1.25rem;
         font-weight: 600;
         text-transform: capitalize;
         margin-bottom: 25px;
       }
 
-      &__item{
+      &__item {
         margin-bottom: 20px;
       }
 
-      @include mobile{
+      @include mobile {
         top: $header-mobile-height;
         padding: 0 10px;
       }
     }
 
-    &__widget{
+    &__widget {
       margin-bottom: 2rem;
 
-      &__title{
+      &__title {
         font-size: 1.25rem;
         font-weight: 600;
         text-transform: capitalize;
         margin-bottom: 16px;
       }
 
-      &__content{
+      &__content {
         color: $txt-second-color;
 
-        &__item{
+        &__item {
           margin-bottom: 13px;
+          color: $txt-second-color;
         }
       }
     }
 
-    &__close{
+    &__close {
       display: none;
 
       @include tablet {
@@ -80,28 +83,26 @@
     }
   }
 
-
-  &__content{
+  &__content {
     flex-grow: 1;
 
-    @include tablet{
+    @include tablet {
       width: 100%;
     }
 
-    &__sort{
-     .row{
-      justify-content: flex-end;
-      align-items: center;
-     }
-
+    &__sort {
+      .row {
+        justify-content: flex-end;
+        align-items: center;
+      }
     }
   }
   &__filter__toggle {
     display: none;
 
     @include tablet {
-        display: block;
-        margin-bottom: 2rem;
+      display: block;
+      margin-bottom: 2rem;
     }
   }
 }
