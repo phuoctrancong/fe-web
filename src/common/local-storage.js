@@ -9,23 +9,22 @@ export const addToLocal = (key, value) => {
       : {
           carts: [],
         };
-
   if (typeof items !== "string") {
-    value.item.currentQuantity = 1;
     items.carts.push(value);
     typeof window !== "undefined" &&
       localStorage.setItem(key, JSON.stringify(items));
   } else {
     const newItems = { ...JSON.parse(items) };
+
     let check = false;
     newItems.carts.forEach((e) => {
       if (e.item.id === value.item.id) {
         check = true;
-        e.item.currentQuantity = e.item.currentQuantity + 1;
+        e.item.currentQuantity =
+          e.item.currentQuantity + e.item.currentQuantity;
       }
     });
     if (!check) {
-      value.item.currentQuantity = 1;
       newItems.carts.push(value);
     }
     typeof window !== "undefined" &&
@@ -54,6 +53,7 @@ export const getFromLocal = (key) => {
 export const deleteItemInLocal = (id) => {
   const items = getFromLocal("cart");
   const newItems = items.filter((e) => e.item.id !== id);
+  emitter.emit("cartQuantityChange", newItems);
   typeof window !== "undefined" &&
     localStorage.setItem(
       "cart",
@@ -81,25 +81,25 @@ export const changeQuantityItemInLocal = (id, mode) => {
     if (item.item.id === id) {
       if (mode === "minus") {
         item.item.currentQuantity--;
-        emitter.emit(
-          "cartQuantityChange",
-          item.item.currentQuantity
-            ? item.item.currentQuantity
-            : item.item.currentQuantity
-        );
+        // emitter.emit(
+        //   "cartQuantityChange",
+        //   item.item.currentQuantity
+        //     ? item.item.currentQuantity
+        //     : item.item.currentQuantity
+        // );
         if (item.item.currentQuantity === 0) {
           toast.error("Số lượng sản phẩm đã đạt tối thiểu");
           return;
         }
       } else {
         item.item.currentQuantity++;
-        emitter.emit(
-          "cartQuantityChange",
-          item.item.currentQuantity
-            ? item.item.currentQuantity
-            : item.item.currentQuantity
-        );
-        if (item?.item.currentQuantity > item?.item.quantity) {
+        // emitter.emit(
+        //   "cartQuantityChange",
+        //   item.item.currentQuantity
+        //     ? item.item.currentQuantity
+        //     : item.item.currentQuantity
+        // );
+        if (item?.item.currentQuantity > item?.item.stockQuantity) {
           toast.error("Số lượng sản phẩm đã đạt tối đa");
           return;
         }

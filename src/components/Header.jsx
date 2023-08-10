@@ -5,12 +5,13 @@ import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/images/Logo-2.png";
 import { isEmpty } from "lodash";
 import emitter from "utils/eventEmitter";
+import { getFromLocal } from "common/local-storage";
 const Header = (props) => {
   const { pathname } = useLocation();
   const activeNav = mainNav.findIndex((e) => e.path === pathname);
   const state = useSelector((state) => state);
   const [cartQuantity, setCartQuantity] = useState(0);
-
+  const carts = getFromLocal("cart");
   const headerRef = useRef(null);
   useEffect(() => {
     window.addEventListener("scroll", () => {
@@ -28,8 +29,8 @@ const Header = (props) => {
     };
   }, []);
   useEffect(() => {
-    const updateCartQuantity = (newQuantity) => {
-      setCartQuantity(newQuantity);
+    const updateCartQuantity = (carts) => {
+      setCartQuantity(carts.length);
     };
     emitter.on("cartQuantityChange", updateCartQuantity);
     return () => {
@@ -77,7 +78,7 @@ const Header = (props) => {
                 </Link>
               </div>
               <div className="header__menu__item header__menu__right__item__cart__length">
-                <span>{cartQuantity > 0 ? cartQuantity : 0}</span>
+                <span>{cartQuantity > 0 ? cartQuantity : carts.length}</span>
               </div>
             </div>
             <div className="header__menu__item header__menu__right__item">

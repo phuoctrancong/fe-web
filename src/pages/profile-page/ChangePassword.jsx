@@ -1,65 +1,66 @@
-import Button from 'components/Button';
-import Helmet from 'components/Helmet';
-import { BASE_URL } from 'constant/config';
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { changePassword, getProfile } from 'redux/actions/auth.actions';
-import BannerUserPage from './BannerUserPage';
-import MenuListUserInfo from './MenuListUserInfo';
+import { Form, Input } from "antd";
+import Button from "components/Button";
+import Helmet from "components/Helmet";
+import { BASE_URL } from "constant/config";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { changePassword, getProfile } from "redux/actions/auth.actions";
+import BannerUserPage from "./BannerUserPage";
+import MenuListUserInfo from "./MenuListUserInfo";
 
 const ChangePassword = () => {
-	const MODE = {
-		OLD_PASSWORD: 'OLD_PASSWORD',
-		NEW_PASSWORD: 'NEW_PASSWORD',
-	};
-	const [changeInfo, setChangeInfo] = useState(false);
-	const [oldPassword, setOldPassword] = useState('');
-	const [newPassword, setNewPassword] = useState('');
-	const [isShowPassword, setIsShowPassword] = useState(false);
-	const [isShowPasswordOld, setIsShowPasswordOld] = useState(false);
-	const [mode, setMode] = useState('');
-	const resetForm = () => {
-		setOldPassword('');
-		setNewPassword('');
-	};
-	const dispatch = useDispatch();
+  const MODE = {
+    OLD_PASSWORD: "OLD_PASSWORD",
+    NEW_PASSWORD: "NEW_PASSWORD",
+  };
+  const [changeInfo, setChangeInfo] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const [isShowPasswordOld, setIsShowPasswordOld] = useState(false);
+  const [mode, setMode] = useState("");
+  const resetForm = () => {
+    setOldPassword("");
+    setNewPassword("");
+  };
+  const dispatch = useDispatch();
 
-	const validateForm = () => {
-		let isFail = {
-			isOldPassword: false,
-			isNewPassword: false,
-		};
-		if (oldPassword.trim().length === 0) {
-			isFail = {
-				...isFail,
-				isOldPassword: true,
-			};
-		}
-		if (newPassword.trim().length === 0) {
-			isFail = {
-				...isFail,
-				isNewPassword: true,
-			};
-		}
-		if (isFail.isNewPassword || isFail.isOldPassword) {
-			toast.error('Vui lòng nhập đủ thông tin');
-			return;
-		}
-	};
-	return (
-		<Helmet title='Đổi mật khẩu'>
-			<div className='user'>
-				<BannerUserPage />
-				<div className='user__content user__content__password'>
-					<div className='row'>
-						<MenuListUserInfo />
-						<div className='col l-8 m-8 c-12 user__content__info'>
-							<div className='user__content__info__top'>
-								<h4>Đổi mật khẩu</h4>
-							</div>
-							<div className='user__content__info__form'>
-								<div className='user__content__info__form__group'>
+  const validateForm = () => {
+    let isFail = {
+      isOldPassword: false,
+      isNewPassword: false,
+    };
+    if (oldPassword.trim().length === 0) {
+      isFail = {
+        ...isFail,
+        isOldPassword: true,
+      };
+    }
+    if (newPassword.trim().length === 0) {
+      isFail = {
+        ...isFail,
+        isNewPassword: true,
+      };
+    }
+    if (isFail.isNewPassword || isFail.isOldPassword) {
+      toast.error("Vui lòng nhập đủ thông tin");
+      return;
+    }
+  };
+  return (
+    <Helmet title="Đổi mật khẩu">
+      <div className="user">
+        <BannerUserPage />
+        <div className="user__content user__content__password">
+          <div className="row">
+            <MenuListUserInfo />
+            <div className="col l-8 m-8 c-12 user__content__info">
+              <div className="user__content__info__top">
+                <h4>Đổi mật khẩu</h4>
+              </div>
+              <div className="user__content__info__form">
+                {/* <div className='user__content__info__form__group'>
 									<label htmlFor=''>Mật khẩu cũ</label>
 									<input
 										type={isShowPasswordOld ? 'text' : 'password'}
@@ -98,34 +99,98 @@ const ChangePassword = () => {
 											}
 										></i>
 									</span>
-								</div>
-							</div>
-							<Button
-								size='sm'
-								onClick={() => {
-									dispatch(
-										changePassword(
-											{
-												oldPassword,
-												newPassword,
-											},
-											() => {
-												dispatch(getProfile(() => setChangeInfo(!changeInfo)));
-												resetForm();
-												toast.success('Thay đổi mật khẩu thành công');
-											},
-										),
-									);
-								}}
-							>
-								Lưu
-							</Button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</Helmet>
-	);
+								</div> */}
+                <Form
+                  name="basic"
+                  labelCol={{
+                    span: 8,
+                  }}
+                  wrapperCol={{
+                    span: 16,
+                  }}
+                  style={{
+                    maxWidth: 600,
+                  }}
+                  initialValues={{
+                    remember: true,
+                  }}
+                  // onFinish={onFinish}
+                  // onFinishFailed={onFinishFailed}
+                  autoComplete="off"
+                >
+                  <Form.Item
+                    label="Mật khẩu cũ"
+                    name="passwordOld"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input your password!",
+                      },
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Mật khẩu mới"
+                    name="passwordNew"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input your password!",
+                      },
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="remember"
+                    valuePropName="checked"
+                    wrapperCol={{
+                      offset: 8,
+                      span: 16,
+                    }}
+                  ></Form.Item>
+
+                  <Form.Item
+                    wrapperCol={{
+                      offset: 8,
+                      span: 16,
+                    }}
+                  >
+                    {/* <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button> */}
+                  </Form.Item>
+                </Form>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  dispatch(
+                    changePassword(
+                      {
+                        oldPassword,
+                        newPassword,
+                      },
+                      () => {
+                        dispatch(getProfile(() => setChangeInfo(!changeInfo)));
+                        resetForm();
+                        toast.success("Thay đổi mật khẩu thành công");
+                      }
+                    )
+                  );
+                }}
+              >
+                Lưu
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Helmet>
+  );
 };
 
 export default ChangePassword;

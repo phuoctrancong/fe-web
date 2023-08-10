@@ -6,7 +6,7 @@ import { listSize } from "redux/actions/size.actions";
 import { toast } from "react-toastify";
 import { ROOT_URL } from "constant/config";
 import { isEmpty } from "lodash";
-import { addToLocal } from "common/local-storage";
+import { addToLocal, getFromLocal } from "common/local-storage";
 import { formatMoney } from "common/common";
 import { Button } from "antd";
 import emitter from "utils/eventEmitter";
@@ -64,18 +64,6 @@ const ProductView = (props) => {
       product: product,
     });
   };
-
-  useEffect(() => {
-    if (selectedSize && selectedColor) {
-      const dataVersion = selectedSize?.version;
-      const version = {
-        ...dataVersion,
-        currentQuantity: quantity,
-      };
-      setInventory(dataVersion?.stockQuantity);
-      setSelectedItem({ item: version, product: selectedSize?.product });
-    }
-  }, [selectedColor, selectedSize, quantity]);
   const updateQuantity = (type) => {
     if (type === "plus") {
       setQuantity(quantity + 1);
@@ -83,10 +71,31 @@ const ProductView = (props) => {
       setQuantity(quantity - 1 < 1 ? 1 : quantity - 1);
     }
   };
+  useEffect(() => {
+    if (selectedSize && selectedColor) {
+      const dataVersion = selectedSize?.version;
+      const version = {
+        ...dataVersion,
+        currentQuantity: quantity,
+      };
+      console.log(
+        "🚀 ~ file: ProductView.jsx:78 ~ useEffect ~ version:",
+        version
+      );
+      setInventory(dataVersion?.stockQuantity);
+      setSelectedItem({ item: version, product: selectedSize?.product });
+    }
+  }, [selectedColor, selectedSize, quantity]);
+
   const handleBuy = () => {
     if (!isEmpty(selectedItem)) {
+      console.log(
+        "🚀 ~ file: ProductView.jsx:88 ~ handleBuy ~ selectedItem:",
+        selectedItem
+      );
       addToLocal("cart", selectedItem);
-      emitter.emit("cartQuantityChange", selectedItem.item.currentQuantity);
+      const carts = getFromLocal("cart");
+      emitter.emit("cartQuantityChange", carts);
       toast.success("Thêm vào giỏ hàng thành công");
     } else {
       check();

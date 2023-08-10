@@ -15,19 +15,28 @@ import {
   Tooltip,
 } from "antd";
 import { formatMoney } from "common/common";
+import { getFromLocal } from "common/local-storage";
 import ResultSuccess from "components/ResultSuccess";
 import { ROOT_URL } from "constant/config";
 import { isEmpty } from "lodash";
 import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import { createOrders } from "redux/actions/order.actions";
+import emitter from "utils/eventEmitter";
 import { MethodPayment } from "./checkkout-constants";
 import "./result-success.css";
 const { TabPane } = Tabs;
 const CheckoutInfo = (props) => {
   const { itemCarts, methods, address } = props;
+  const dispatch = useDispatch();
+  const history = useHistory();
   const [tab, setTab] = useState();
 
   const [total, setTotal] = useState();
   const [openModal, setOpenModal] = useState(false);
+  const [status, setStatus] = useState(0);
   const carts = useMemo(() => {
     if (!isEmpty(itemCarts?.carts)) {
       const newCarts = itemCarts.carts.map((e) => {
@@ -96,7 +105,7 @@ const CheckoutInfo = (props) => {
     setTab(checked ? value : "");
   };
   const handleCheckout = () => {
-    const param = {
+    const params = {
       shippingAddressId: address.id,
       paymentMethod: parseInt(tab),
       products: carts?.map((e) => ({
@@ -105,6 +114,18 @@ const CheckoutInfo = (props) => {
         quantity: e.item?.currentQuantity,
       })),
     };
+    dispatch(
+      createOrders(params, () => {
+        setStatus(1);
+        localStorage.removeItem("cart");
+        const cartsNews = getFromLocal("cart");
+        emitter.emit("cartQuantityChange", carts);
+        emitter.emit("cartQuantityChange", cartsNews);
+        toast.success("Đặt hàng thành công");
+        history.push("/");
+      })
+    );
+
     // setOpenModal(true);
   };
 

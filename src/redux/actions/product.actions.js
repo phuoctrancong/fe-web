@@ -1,8 +1,8 @@
 import { notification } from "antd";
 import * as types from "../constants";
-import { toast } from "react-toastify";
 import { detailProduct, list } from "service/product.service";
 export const listProduct = (query) => {
+  console.log("🚀 ~ file: product.actions.js:5 ~ listProduct ~ query:", query);
   return async (dispatch) => {
     try {
       const response = await list(query);

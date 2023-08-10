@@ -11,24 +11,22 @@ import { listCategory } from "redux/actions/category.action";
 import { listColor } from "redux/actions/color.actions";
 import { listSize } from "redux/actions/size.actions";
 import SearchBar from "components/SearchBar";
-import SliderProton from "components/SliderProton";
 import EmptyView from "components/EmptyView";
 import ProductSort from "components/Product-sort";
-import NavbarCategory from "components/NavbarCategory";
 import { isEmpty } from "lodash";
 import { Collapse } from "antd";
 import { FILTER_PRICE } from "common/common";
 const { Panel } = Collapse;
 const Catalog = () => {
   const dispatch = useDispatch();
-  const [selectedPrice, setSelectedPrice] = useState([100000, 850000]);
   const productList = useSelector((state) => state.product.items);
   const categoryList = useSelector((state) => state.category);
   const colorList = useSelector((state) => state.color);
   const sizeList = useSelector((state) => state.size);
   const [resultsFound, setResultsFound] = useState(true);
   const [searchInput, setSearchInput] = useState("");
-  const [sort, setSort] = useState({ limit: 8 });
+  const [conditionSort, setSort] = useState({ limit: 8 });
+  const [filterPrice, setFilterPrice] = useState({ limit: 8 });
   const [products, setProducts] = useState([]);
   const initFilter = {
     categories: [],
@@ -42,16 +40,22 @@ const Catalog = () => {
   }, [products, productList]);
   const [filter, setFilter] = useState(initFilter);
   useEffect(() => {
-    dispatch(listProduct(sort));
+    if (filterPrice || conditionSort) {
+      const params = {
+        orderPrice: conditionSort.orderPrice,
+        minPrice: filterPrice.minPrice,
+        maxPrice: filterPrice.maxPrice,
+        limit: 8,
+      };
+      dispatch(listProduct(params));
+    }
+    dispatch(listProduct());
     dispatch(listCategory());
     dispatch(listColor());
     dispatch(listSize());
-  }, [sort, dispatch]);
-
-  useEffect(() => {});
+  }, [conditionSort, filterPrice, dispatch]);
 
   const filterSelect = (type, checked, item) => {
-    console.log("item", item);
     if (checked) {
       switch (type) {
         case "CATEGORY":
@@ -88,13 +92,17 @@ const Catalog = () => {
   };
   const clearFilter = () => setFilter(initFilter);
 
-  const handleChangePrice = (e, value) => {
-    setSelectedPrice(value);
-  };
   const handleSortChange = (newSortValue) => {
     setSort({
-      ...sort,
+      ...conditionSort,
       orderPrice: newSortValue,
+    });
+  };
+  const handleFilterPrice = (minPrice, maxPrice) => {
+    setFilterPrice({
+      ...filterPrice,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
     });
   };
   const updateProducts = useCallback(() => {
@@ -128,21 +136,12 @@ const Catalog = () => {
       );
     }
 
-    const minPrice = selectedPrice[0];
-    const maxPrice = selectedPrice[1];
-    //TODO
-    // if (minPrice && maxPrice) {
-    //   temp = temp.filter(
-    //     (item) => item.price >= minPrice && item.price <= maxPrice
-    //   );
-    // }
-
     setProducts(temp);
     !isEmpty(temp) ? setResultsFound(true) : setResultsFound(false);
-  }, [filter, productList, selectedPrice, searchInput]);
+  }, [filter, productList, searchInput]);
   useEffect(() => {
     updateProducts();
-  }, [updateProducts, productList, selectedPrice, searchInput, resultsFound]);
+  }, [updateProducts, productList, searchInput, resultsFound]);
   const filterRef = useRef(null);
   const showHideFilter = () => filterRef.current?.classList.toggle("active");
   return (
@@ -253,10 +252,12 @@ const Catalog = () => {
                   <div className="catalog__filter__widget__content__item">
                     <CheckBox
                       label={itemPrice.label}
-                      // onChange={(input) =>
-                      //   filterSelect("SIZE", input.checked, item)
-                      // }
-                      // checked={filter.sizes.includes(item.name)}
+                      onChange={() =>
+                        handleFilterPrice(
+                          itemPrice.minPrice,
+                          itemPrice.maxPrice
+                        )
+                      }
                     />
                   </div>
                 </>
@@ -282,7 +283,7 @@ const Catalog = () => {
             <div className="row">
               <h4>Sắp xếp theo</h4>
               <ProductSort
-                current={sort?.orderPrice}
+                current={conditionSort?.orderPrice}
                 onchange={handleSortChange}
               />
             </div>

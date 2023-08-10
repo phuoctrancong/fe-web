@@ -20,7 +20,10 @@ import {
 import { EyeOutlined } from "@ant-design/icons";
 
 const OrderPageUser = () => {
-  const state = useSelector((state) => state);
+  const state = useSelector((state) => {
+    return state;
+  });
+  console.log("🚀 ~ file: Order.jsx:24 ~ OrderPageUser ~ state:", state);
   const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -38,7 +41,7 @@ const OrderPageUser = () => {
     {
       title: "Phiên bản",
 
-      render: (record) => `${record.color?.name} - ${record.size?.name}`,
+      render: (record) => `${record?.color?.name} - ${record?.size?.name}`,
     },
     {
       title: "Giá",
@@ -95,7 +98,7 @@ const OrderPageUser = () => {
                     {state?.order?.items?.map((e, i) => (
                       <tr key={i}>
                         <td>{i + 1}</td>
-                        <td>{e?.id}</td>
+                        <td>{e?.code}</td>
                         <td>{formatTime(e?.createdAt)}</td>
                         <td>{OrderStatus[e?.status]}</td>
                         <td onClick={() => showModalDetail(e?.id)}>
@@ -145,7 +148,7 @@ const OrderPageUser = () => {
                       marginBottom: 0,
                     }}
                   >
-                    #{state.order.item?.id}
+                    #{state.order.item?.code}
                   </Form.Item>
                   <Form.Item
                     label="Trạng thái đơn hàng"
@@ -174,7 +177,7 @@ const OrderPageUser = () => {
                       marginBottom: 0,
                     }}
                   >
-                    {state.order.item?.phone}
+                    {state.order.item?.address?.phone}
                   </Form.Item>
                   <Form.Item
                     label="Địa chỉ"
@@ -183,14 +186,14 @@ const OrderPageUser = () => {
                       marginBottom: 0,
                     }}
                   >
-                    {state.order.item?.address}
+                    {state.order.item?.address?.addressLine}
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <h3>Danh sách sản phẩm</h3>
                   <Table
                     columns={columnsDetail}
-                    dataSource={state.order.item.orderDetails}
+                    dataSource={state?.order?.item.orderDetails}
                     pagination={false}
                   />
                 </Col>

@@ -35,5 +35,8 @@
 
   input:checked ~ &__checkmark > i {
     transform: scale(1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
