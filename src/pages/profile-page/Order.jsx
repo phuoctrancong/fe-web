@@ -1,4 +1,4 @@
-import { formatMoney, formatTime } from "common/common";
+import { formatMoney, formatTime, STATUS_ORDER } from "common/common";
 import Helmet from "components/Helmet";
 import { OrderStatus } from "constant/filter.constans";
 import React, { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ import {
   Button,
 } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
+import Status from "components/Status";
 
 const OrderPageUser = () => {
   const state = useSelector((state) => {
@@ -157,7 +158,12 @@ const OrderPageUser = () => {
                       marginBottom: 0,
                     }}
                   >
-                    {OrderStatus[state.order.item?.status]}
+                    {console.log("cccccccccccccc", state.order.item?.status)}
+                    <Status
+                      options={STATUS_ORDER}
+                      value={state.order.item?.status}
+                      variant="contained"
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>

@@ -4,14 +4,19 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import {
+  Avatar,
   Button,
   Card,
   Checkbox,
   Col,
   Divider,
+  List,
+  Modal,
   Row,
+  Skeleton,
   Table,
   Tabs,
+  Tag,
   Tooltip,
 } from "antd";
 import { formatMoney } from "common/common";
@@ -20,12 +25,14 @@ import ResultSuccess from "components/ResultSuccess";
 import { ROOT_URL } from "constant/config";
 import { isEmpty } from "lodash";
 import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
+import { listAddresses } from "redux/actions/address.action";
 import { createOrders } from "redux/actions/order.actions";
 import emitter from "utils/eventEmitter";
 import { MethodPayment } from "./checkkout-constants";
+import InfiniteScroll from "react-infinite-scroll-component";
 import "./result-success.css";
 const { TabPane } = Tabs;
 const CheckoutInfo = (props) => {
@@ -33,10 +40,33 @@ const CheckoutInfo = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [tab, setTab] = useState();
-
   const [total, setTotal] = useState();
   const [openModal, setOpenModal] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState(0);
+  const [listAddress, setlistAddress] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const stateAddress = useSelector((state) => {
+    return state.address?.items;
+  });
+  const loadMoreData = () => {
+    if (loading) {
+      return;
+    }
+    setLoading(true);
+    dispatch(listAddresses({ isMe: 1 }))
+      .then(() => {
+        setlistAddress(stateAddress);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  };
+  useEffect(() => {
+    loadMoreData();
+  }, []);
+
   const carts = useMemo(() => {
     if (!isEmpty(itemCarts?.carts)) {
       const newCarts = itemCarts.carts.map((e) => {
@@ -62,7 +92,9 @@ const CheckoutInfo = (props) => {
     }
     return 0;
   }, [carts]);
-
+  const handleCancel = () => {
+    setVisible(false);
+  };
   useEffect(() => {
     setTotal(totalSum);
   }, [totalSum]);
@@ -142,7 +174,7 @@ const CheckoutInfo = (props) => {
             </h3>
             <p>{address?.addressLine}</p>
             <Tooltip placement="top" title={"Thay đổi địa chỉ"}>
-              <Button>
+              <Button onClick={() => setVisible(true)}>
                 <SettingOutlined key="setting" />
               </Button>
             </Tooltip>
@@ -200,9 +232,9 @@ const CheckoutInfo = (props) => {
                   </Col>
                   <Col span={8}>
                     {tab === MethodPayment.CARD ? (
-                      <Button disabled>Thanh toán bằng thẻ tín dụng</Button>
+                      <Tag color="#f50">Thanh toán bằng thẻ tín dụng</Tag>
                     ) : (
-                      <Button disabled>Thanh toán khi nhận hàng</Button>
+                      <Tag color="#f50">Thanh toán khi nhận hàng</Tag>
                     )}
                   </Col>
                 </Row>
@@ -252,6 +284,54 @@ const CheckoutInfo = (props) => {
       ) : (
         <ResultSuccess />
       )}
+      <Modal
+        title="Danh sách địa chỉ"
+        visible={visible}
+        onCancel={handleCancel}
+        footer={false}
+        width={800}
+      >
+        <div
+          id="scrollableDiv"
+          style={{
+            height: 400,
+            overflow: "auto",
+            padding: "0 20px",
+            border: "1px solid rgba(140, 140, 140, 0.35)",
+          }}
+        >
+          <InfiniteScroll
+            dataLength={listAddress.length}
+            next={loadMoreData}
+            hasMore={listAddress.length < 50}
+            loader={
+              <Skeleton
+                avatar
+                paragraph={{
+                  rows: 1,
+                }}
+                active
+              />
+            }
+            endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+            scrollableTarget="scrollableDiv"
+          >
+            <List
+              dataSource={listAddress}
+              renderItem={(item) => (
+                <List.Item key={item.fullName}>
+                  <List.Item.Meta
+                    // avatar={<Avatar src={item.picture.large} />}
+                    title={<a href="https://ant.design">{item?.fullName}</a>}
+                    description={item.addressLine}
+                  />
+                  <div>Content</div>
+                </List.Item>
+              )}
+            />
+          </InfiniteScroll>
+        </div>
+      </Modal>
     </>
   );
 };

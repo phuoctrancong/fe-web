@@ -48,8 +48,9 @@ const Catalog = () => {
         limit: 8,
       };
       dispatch(listProduct(params));
+    } else {
+      dispatch(listProduct());
     }
-    dispatch(listProduct());
     dispatch(listCategory());
     dispatch(listColor());
     dispatch(listSize());

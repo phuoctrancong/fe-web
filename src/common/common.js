@@ -56,3 +56,10 @@ export const FILTER_PRICE = [
     maxPrice: 700000,
   },
 ];
+export const STATUS_ORDER = [
+  {
+    id: 1,
+    text: "Chở xác nhận",
+    color: "orange",
+  },
+];

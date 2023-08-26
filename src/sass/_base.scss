@@ -45,6 +45,14 @@ img {
 .ant-modal-header {
   background-color: $main-color;
 }
+.ant-modal-title {
+  margin: 0;
+  color: #f7e9e9;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 22px;
+  word-wrap: break-word;
+}
 
 @each $color, $val in $colors {
   .color-#{$color} {
@@ -52,6 +60,9 @@ img {
   }
 
   .bg-#{$color} {
+    background-color: $val;
+  }
+  .status-#{$color} {
     background-color: $val;
   }
 }
@@ -105,6 +116,12 @@ img {
   @include mobile {
     margin-top: calc(#{$header-mobile-height} + 10px);
   }
+}
+.ant-modal-body {
+  padding: 30px !important;
+  font-size: 14px;
+  line-height: 1.5715;
+  word-wrap: break-word;
 }
 
 .grid {
