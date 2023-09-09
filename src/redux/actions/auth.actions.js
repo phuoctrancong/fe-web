@@ -38,10 +38,7 @@ export const register = (params, onSuccess) => {
     try {
       const response = await registerService(params);
       if (response.statusCode !== 200) {
-        notification.error({
-          message: "Đăng kí thất bại",
-          description: response.message,
-        });
+        toast.error(response.message);
       } else {
         dispatch({
           type: types.REGISTER,
@@ -49,7 +46,7 @@ export const register = (params, onSuccess) => {
         onSuccess();
       }
     } catch (error) {
-      notification.error({
+      toast.error({
         message: "Đăng ký thất bại.",
         description: error?.message || error,
       });

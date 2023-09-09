@@ -7,16 +7,45 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProfile, login, register } from "../redux/actions/auth.actions";
 import { Redirect } from "react-router-dom";
 import { toast } from "react-toastify";
-import { notification } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Form, Input, Select, Spin } from "antd";
+const { Option } = Select;
+const formItemLayout = {
+  labelCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 8,
+    },
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 16,
+    },
+  },
+};
+const tailFormItemLayout = {
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 16,
+      offset: 8,
+    },
+  },
+};
 const Login = (props) => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const [changeUser, setChangeUser] = useState(false);
   const [loginForm, setLoginFrom] = useState(false);
-  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
@@ -37,32 +66,24 @@ const Login = (props) => {
       })
     );
   };
-  const handleRegister = (e) => {
-    e.preventDefault();
+  const handleRegister = (values) => {
     const params = {
-      fullname: name,
-      email: email,
-      password: password,
-      phone: phone,
-      gender: +gender,
+      ...values,
+      gender: +values.gender,
     };
     dispatch(
       register(params, () => {
-        notification.success({
-          message: "Đăng ký thành công!",
-          description: "Vui lòng bấm vào nút đăng nhập!",
-          duration: 2000,
-        });
+        setLoading(false);
+        toast.success("Đăng ký thành công!Bây giờ hãy đăng nhập vào hệ thống.");
       })
     );
-    setName("");
-    setPassword("");
-    setEmail("");
+    form.resetFields();
   };
   // @ts-ignore
   if (state.auth?.token) {
     return <Redirect to="/" />;
   }
+
   return (
     <div className="login">
       <div
@@ -135,61 +156,122 @@ const Login = (props) => {
           hoặc sử dụng tài khoản khác
         </span>
         <div className="login__create-container__form-container">
-          <form
-            className="login__create-container__form-container__form"
-            onSubmit={handleRegister}
-          >
-            <input
-              className="login__create-container__form-container__form--name"
-              type="text"
-              placeholder="Họ và tên"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-            <input
-              className="login__create-container__form-container__form--email"
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <input
-              className="login__create-container__form-container__form--password"
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <input
-              className="login__create-container__form-container__form--password"
-              type="tel"
-              placeholder="Số điện thoại"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-            <select
-              className="login__create-container__form-container__form--gender"
-              name="select"
-              id=""
-              value={gender}
-              onChange={(e) => {
-                setGender(e.target.value);
+          {loading ? (
+            <Spin size="large" />
+          ) : (
+            <Form
+              {...formItemLayout}
+              name="register"
+              labelCol={{ span: 8 }}
+              wrapperCol={{ span: 16 }}
+              style={{
+                maxWidth: 600,
               }}
+              onFinish={handleRegister}
             >
-              <option value="" disabled selected aria-required>
-                Giới tính
-              </option>
-              <option value={0}>Nam</option>
-              <option value={1}>Nữ</option>
-            </select>
-            <button className="login__create-container__form-container__form--submit">
-              Đăng kí
-            </button>
-          </form>
+              <Form.Item
+                name="fullname"
+                label="Họ và tên"
+                tooltip="What do you want others to call you?"
+                rules={[
+                  {
+                    required: true,
+                    message: "Hãy nhập họ và tên!",
+                    whitespace: true,
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="email"
+                label="E-mail"
+                rules={[
+                  {
+                    type: "email",
+                    message: "The input is not valid E-mail!",
+                  },
+                  {
+                    required: true,
+                    message: "Please input your E-mail!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                label="Mật khẩu"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                ]}
+                hasFeedback
+              >
+                <Input.Password />
+              </Form.Item>
+              <Form.Item
+                name="phone"
+                label="Số điện thoại"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your phone number!",
+                  },
+                ]}
+              >
+                <Input
+                  // addonBefore={}
+                  style={{
+                    width: "100%",
+                  }}
+                />
+              </Form.Item>
+              <Form.Item
+                name="gender"
+                label="Giới tính"
+                rules={[
+                  {
+                    required: true,
+                    message: "Bạn chưa chọn giới tính!",
+                  },
+                ]}
+              >
+                <Select placeholder="Chọn giới tính">
+                  <Option value="0">Nam</Option>
+                  <Option value="1">Nữ</Option>
+                  <Option value="2">Khác</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="agreement"
+                valuePropName="checked"
+                rules={[
+                  {
+                    validator: (_, value) =>
+                      value
+                        ? Promise.resolve()
+                        : Promise.reject(
+                            new Error("Bạn chưa đồng ý điều khoản!")
+                          ),
+                  },
+                ]}
+                {...tailFormItemLayout}
+              >
+                <Checkbox>
+                  Tôi đã đọc <a href="">điều khoản</a>
+                </Checkbox>
+              </Form.Item>
+              <Form.Item {...tailFormItemLayout}>
+                <Button type="primary" htmlType="submit">
+                  Đăng ký
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
         </div>
       </div>
       <div

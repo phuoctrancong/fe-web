@@ -1,8 +1,8 @@
-.product{
+.product {
   @include flex(flex-start, flex-start);
 
-  @include mobile{
-    flex-direction: column 
+  @include mobile {
+    flex-direction: column;
   }
 
   &__images {
@@ -10,16 +10,15 @@
     width: 60%;
     flex-wrap: wrap;
 
-
-    @include tablet{
+    @include tablet {
       width: 80%;
     }
 
     @include mobile {
       width: 100%;
-  }
+    }
 
-    &__list{
+    &__list {
       width: 20%;
 
       &__item {
@@ -28,13 +27,13 @@
       }
     }
 
-    &__main{
+    &__main {
       flex-grow: 1;
       padding-top: 100%;
       position: relative;
+      margin: 0 20px;
 
-
-      img{
+      img {
         position: absolute;
         top: 0;
         left: 50%;
@@ -47,30 +46,28 @@
   &__info {
     flex-grow: 1;
     position: sticky;
-    top:$header-shrink-height;
+    top: $header-shrink-height;
     padding-top: 2rem;
-  
 
     @include mobile {
       position: relative;
       top: unset;
-  }
+    }
 
-    &__title{
+    &__title {
       font-size: 2.5rem;
       font-weight: normal;
     }
 
-    &__item{
+    &__item {
       margin-top: 2rem;
 
-      &__price{
+      &__price {
         color: $main-color;
         font-size: 2rem;
         font-weight: 600;
 
-
-        &__old{
+        &__old {
           display: inline-block;
           padding: 0 10px;
           font-size: 1.4rem;
@@ -79,18 +76,17 @@
         }
       }
 
-      &__title{
+      &__title {
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 1rem;
       }
 
-      &__list{
+      &__list {
         @include flex(center, flex-start);
 
-        &__item{
-          @include flex(center,center);
-
+        &__item {
+          @include flex(center, center);
 
           width: 50px;
           height: 50px;
@@ -99,55 +95,55 @@
           cursor: pointer;
           margin-right: 1rem;
 
-          @include mobile{
+          @include mobile {
             height: 40px;
             width: 40px;
           }
 
-          &.active{
+          &.active {
             border-color: red;
           }
 
-          &:hover{
+          &:hover {
             border-color: $main-color;
           }
 
-          .circle{
+          .circle {
             height: 40px;
             width: 40px;
             border-radius: 50%;
 
-            @include mobile{
+            @include mobile {
               height: 30px;
               width: 30px;
             }
           }
 
-          &__size{
+          &__size {
             font-size: 1.5rem;
             text-transform: uppercase;
           }
         }
       }
 
-      &__quantity{
-        @include flex(flex-start,flex-start);
+      &__quantity {
+        @include flex(flex-start, flex-start);
 
-        &__btn{
-          @include flex(center,center);
+        &__btn {
+          @include flex(center, center);
           height: 30px;
           width: 30px;
-          border:2px solid $txt-second-color;
+          border: 2px solid $txt-second-color;
           font-size: 1.5rem;
           cursor: pointer;
-          &:hover{
+          &:hover {
             background-color: $main-color;
             color: #fff;
-            transition: all .3s ease-in-out;
+            transition: all 0.3s ease-in-out;
           }
         }
 
-        &__input{
+        &__input {
           @include flex(center, center);
           height: 30px;
           width: 80px;
@@ -159,7 +155,7 @@
         }
       }
 
-      button{
+      button {
         margin-right: 1rem;
         margin-bottom: 1rem;
       }
@@ -167,18 +163,18 @@
   }
 }
 
-.product-description{
+.product-description {
   width: 100%;
   padding: 2rem 2rem 3rem;
   height: 400px;
   overflow: hidden;
   position: relative;
 
-  @include mobile{
+  @include mobile {
     display: none;
   }
 
-  &.mobile{
+  &.mobile {
     display: none;
 
     @include mobile {
@@ -186,23 +182,23 @@
     }
   }
 
-  &.expand{
-    height: max-content ;
+  &.expand {
+    height: max-content;
   }
 
-  &__title{
+  &__title {
     font-size: 1.5rem;
     font-weight: 600;
     margin: 2rem 0;
   }
 
-  &__content{
+  &__content {
     font-size: 1.25rem;
     line-height: 1.875rem;
     text-align: justify;
   }
 
-  &__toggle{
+  &__toggle {
     position: absolute;
     bottom: 0;
     left: 50%;
