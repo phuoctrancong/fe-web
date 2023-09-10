@@ -9,7 +9,8 @@ const addressReducer = (state = initialState, action) => {
     case types.GET_LIST_ADDRESS:
       return {
         ...state,
-        items: action?.data,
+        items: action?.data?.items,
+        meta: action?.data?.meta,
       };
     case types.CREATE_ADDRESS:
     case types.UPDATE_ADDRESS:

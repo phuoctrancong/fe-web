@@ -34,10 +34,9 @@ const AddressUser = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const state = useSelector((state) => state.address);
-
   useEffect(() => {
     dispatch(listAddresses({ isMe: 1 }));
-  }, [dispatch]);
+  }, [dispatch, page]);
   useEffect(() => {
     form.setFieldsValue({
       fullName: state?.item?.fullName,
@@ -95,7 +94,6 @@ const AddressUser = () => {
     setVisible(false);
     form.resetFields();
   };
-
   const showLableButton = (mode) => {
     switch (mode) {
       case "CREATE":
@@ -129,6 +127,12 @@ const AddressUser = () => {
                 itemLayout="horizontal"
                 // loadMore={loadMore}
                 dataSource={state?.items}
+                pagination={{
+                  onChange: (page) => {
+                    setPage(page);
+                  },
+                  pageSize: 5,
+                }}
                 renderItem={(item) => (
                   <List.Item
                     actions={[
