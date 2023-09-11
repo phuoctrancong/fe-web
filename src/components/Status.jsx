@@ -9,6 +9,7 @@ const Status = ({ variant, sx, value, options }) => {
       sx={(theme) => ({
         display: "inline-block",
         borderRadius: 1,
+        color: "white",
         ...(variant === "contained"
           ? {
               p: "0 8px",

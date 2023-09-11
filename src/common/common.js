@@ -62,4 +62,29 @@ export const STATUS_ORDER = [
     text: "Chở xác nhận",
     color: "orange",
   },
+  {
+    id: 2,
+    text: "Đã xác nhận",
+    color: "green",
+  },
+  {
+    id: 3,
+    text: "Đang giao hàng",
+    color: "yellow",
+  },
+  {
+    id: 4,
+    text: "Đã nhận hàng",
+    color: "green",
+  },
+  {
+    id: 5,
+    text: "Hoàn thành",
+    color: "green",
+  },
+  {
+    id: 6,
+    text: "Từ chối",
+    color: "red",
+  },
 ];
