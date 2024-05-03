@@ -34,6 +34,7 @@ import emitter from "utils/eventEmitter";
 import { MethodPayment } from "./checkkout-constants";
 import InfiniteScroll from "react-infinite-scroll-component";
 import "./result-success.css";
+import Swal from "sweetalert2";
 const { TabPane } = Tabs;
 const CheckoutInfo = (props) => {
   const { itemCarts, methods, address } = props;
@@ -136,6 +137,31 @@ const CheckoutInfo = (props) => {
     const { value, checked } = activeKey.target;
     setTab(checked ? value : "");
   };
+  const alertSuccess = () => {
+    let timerInterval;
+    Swal.fire({
+      title: "Bạn đã đặt hàng thành công đơn hàng!",
+      html: "Thông báo sẽ đóng sau <b></b> milliseconds.",
+      timer: 2000,
+      icon: "success",
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+        const b = Swal.getHtmlContainer().querySelector("b");
+        timerInterval = setInterval(() => {
+          b.textContent = Swal.getTimerLeft();
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    }).then((result) => {
+      /* Read more about handling dismissals below */
+      if (result.dismiss === Swal.DismissReason.timer) {
+        console.log("I was closed by the timer");
+      }
+    });
+  };
   const handleCheckout = () => {
     const params = {
       shippingAddressId: address.id,
@@ -153,11 +179,11 @@ const CheckoutInfo = (props) => {
         const cartsNews = getFromLocal("cart");
         emitter.emit("cartQuantityChange", carts);
         emitter.emit("cartQuantityChange", cartsNews);
-        toast.success("Đặt hàng thành công");
+        alertSuccess();
+        // toast.success("Đặt hàng thành công");
         history.push("/");
       })
     );
-
     // setOpenModal(true);
   };
 
@@ -282,7 +308,7 @@ const CheckoutInfo = (props) => {
           </Row>
         </>
       ) : (
-        <ResultSuccess />
+        Swal.fire("Good job!", "You clicked the button!", "success")
       )}
       <Modal
         title="Danh sách địa chỉ"

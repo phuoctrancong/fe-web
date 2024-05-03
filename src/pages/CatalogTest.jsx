@@ -15,142 +15,137 @@ import EmptyView from "components/EmptyView";
 import ProductSort from "components/Product-sort";
 import { isEmpty } from "lodash";
 import { Collapse } from "antd";
-import { FILTER_PRICE, transformObjectToFilter } from "common/common";
+import {
+  FILTER_PRICE,
+  convertFilterParams,
+  convertSortParams,
+  transformObjectToSort,
+} from "common/common";
 const { Panel } = Collapse;
-const Catalog = () => {
+const CatalogTest = () => {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.product.items);
   const categoryList = useSelector((state) => state.category);
   const colorList = useSelector((state) => state.color);
   const sizeList = useSelector((state) => state.size);
   const [resultsFound, setResultsFound] = useState(true);
-  const [searchInput, setSearchInput] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [conditionSort, setSort] = useState({ limit: 8 });
-  const [filterPrice, setFilterPrice] = useState({ limit: 8 });
-  const [filterPrice_, setFilterPrice_] = useState({ limit: 8 });
-
   const [products, setProducts] = useState([]);
   const initFilter = {
-    categories: [],
-    colors: [],
-    sizes: [],
+    subCategoryIds: [],
+    colorIds: [],
+    sizeIds: [],
+    maxPrice: null,
+    minPrice: null,
+    orderPrice: [null, null],
   };
+  const [filterOps, setFilterOps] = useState(initFilter);
+  const handleChangeFilter = (type, checked, item) => {
+    if (checked) {
+      switch (type) {
+        case "CATEGORY":
+          setFilterOps({
+            ...filterOps,
+            subCategoryIds: [...filterOps.subCategoryIds, item.id],
+          });
+          break;
+        case "COLOR":
+          setFilterOps({
+            ...filterOps,
+            colorIds: [...filterOps.colorIds, item.id],
+          });
+          break;
+        case "SIZE":
+          setFilterOps({
+            ...filterOps,
+            sizeIds: [...filterOps.sizeIds, item.id],
+          });
+          break;
+        case "PRICE":
+          setFilterOps({
+            ...filterOps,
+            minPrice: item.minPrice,
+            maxPrice: item.maxPrice,
+          });
+          break;
+        default:
+          break;
+      }
+    } else {
+      switch (type) {
+        case "CATEGORY":
+          const newCategory = filterOps.subCategoryIds.filter(
+            (e) => e !== item.id
+          );
+          setFilterOps({ ...filterOps, subCategoryIds: newCategory });
+          break;
+        case "COLOR":
+          const newColor = filterOps.colorIds.filter((e) => e !== item.id);
+          setFilterOps({ ...filterOps, colorIds: newColor });
+          break;
+        case "SIZE":
+          const newSize = filterOps.sizeIds.filter((e) => e !== item.id);
+          setFilterOps({ ...filterOps, sizeIds: newSize });
+          break;
+        case "PRICE":
+          setFilterOps({
+            ...filterOps,
+            minPrice: null,
+            maxPrice: null,
+          });
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   useEffect(() => {
     if (!isEmpty(productList)) {
       setProducts(productList);
     }
   }, [products, productList]);
-  const [filter, setFilter] = useState(initFilter);
-  useEffect(() => {
-    if (filterPrice || conditionSort || filterPrice_) {
-      const params = {
-        orderPrice: conditionSort.orderPrice,
-        minPrice: filterPrice.minPrice,
-        maxPrice: filterPrice.maxPrice,
-        filter: transformObjectToFilter({ price: filterPrice?.minPrice }),
-        limit: 8,
-      };
-      dispatch(listProduct(params));
-    } else {
-      dispatch(listProduct());
-    }
+
+  const refreshData = () => {
+    const params = {
+      keyword: keyword.trim(),
+      filter: convertFilterParams({
+        subCategoryIds: filterOps.subCategoryIds,
+        colorIds: filterOps.colorIds,
+        sizeIds: filterOps.sizeIds,
+        minPrice: filterOps.minPrice,
+        maxPrice: filterOps.maxPrice,
+      }),
+      orderPrice: conditionSort.orderPrice,
+      // sort: convertSortParams({
+      //   sortBy: "code",
+      //   order: "DESC",
+      // }),
+      limit: 8,
+    };
+    dispatch(listProduct(params));
     dispatch(listCategory());
     dispatch(listColor());
     dispatch(listSize());
-  }, [conditionSort, filterPrice, dispatch]);
-
-  const filterSelect = (type, checked, item) => {
-    if (checked) {
-      switch (type) {
-        case "CATEGORY":
-          setFilter({
-            ...filter,
-            categories: [...filter.categories, item.id],
-          });
-          break;
-        case "COLOR":
-          setFilter({ ...filter, colors: [...filter.colors, item.code] });
-          break;
-        case "SIZE":
-          setFilter({ ...filter, sizes: [...filter.sizes, item.name] });
-          break;
-        default:
-      }
-    } else {
-      switch (type) {
-        case "CATEGORY":
-          const newCategory = filter.categories.filter((e) => e !== item.id);
-          setFilter({ ...filter, categories: newCategory });
-          break;
-        case "COLOR":
-          const newColor = filter.colors.filter((e) => e !== item.code);
-          setFilter({ ...filter, colors: newColor });
-          break;
-        case "SIZE":
-          const newSize = filter.sizes.filter((e) => e !== item.name);
-          setFilter({ ...filter, sizes: newSize });
-          break;
-        default:
-      }
-    }
   };
-  const clearFilter = () => setFilter(initFilter);
-
+  useEffect(() => {
+    refreshData();
+  }, [filterOps, keyword, conditionSort, dispatch]);
+  const clearFilter = () => setFilterOps(initFilter);
   const handleSortChange = (newSortValue) => {
     setSort({
       ...conditionSort,
       orderPrice: newSortValue,
     });
   };
-  const handleFilterPrice = (minPrice, maxPrice) => {
-    setFilterPrice({
-      ...filterPrice,
-      minPrice: minPrice,
-      maxPrice: maxPrice,
-    });
-    setFilterPrice_({
-      ...filterPrice_,
-      minPrice: minPrice,
-      maxPrice: maxPrice,
-    });
-  };
   const updateProducts = useCallback(() => {
     let temp = productList;
-    if (filter.categories.length > 0) {
-      temp = temp.filter((e) => filter.categories.includes(e.subCategory?.id));
-    }
-
-    if (filter.colors.length > 0) {
-      temp = temp.filter((e) => {
-        const check = e?.productVersions?.find((item) => {
-          return filter?.colors?.includes(item?.color?.code);
-        });
-        return check !== undefined;
-      });
-    }
-    if (filter.sizes.length > 0) {
-      temp = temp.filter((e) => {
-        const check = e?.productVersions?.find((item) =>
-          filter?.sizes?.includes(item?.size?.name)
-        );
-        return check !== undefined;
-      });
-    }
-
-    if (searchInput) {
-      temp = temp.filter(
-        (item) =>
-          item.name.toLowerCase().search(searchInput.toLowerCase().trim()) !==
-          -1
-      );
-    }
-
-    setProducts(temp);
     !isEmpty(temp) ? setResultsFound(true) : setResultsFound(false);
-  }, [filter, productList, searchInput]);
+  }, [filterOps, productList, keyword]);
   useEffect(() => {
     updateProducts();
-  }, [updateProducts, productList, searchInput, resultsFound]);
+  }, [updateProducts, productList, keyword, resultsFound]);
   const filterRef = useRef(null);
   const showHideFilter = () => filterRef.current?.classList.toggle("active");
   return (
@@ -159,8 +154,8 @@ const Catalog = () => {
         <div className="catalog__filter" ref={filterRef}>
           <div className="catalog__search">
             <SearchBar
-              value={searchInput}
-              changeInput={(e) => setSearchInput(e.target.value)}
+              value={keyword}
+              changeInput={(e) => setKeyword(e.target.value)}
             />
           </div>
 
@@ -198,9 +193,12 @@ const Catalog = () => {
                           <CheckBox
                             label={itemChild.name}
                             onChange={(input) =>
-                              filterSelect("CATEGORY", input.checked, itemChild)
+                              handleChangeFilter(
+                                "CATEGORY",
+                                input.checked,
+                                itemChild
+                              )
                             }
-                            checked={filter.categories.includes(itemChild?.id)}
                           />
                         </div>
                       ))}
@@ -223,9 +221,8 @@ const Catalog = () => {
                       <CheckBox
                         label={item.name}
                         onChange={(input) =>
-                          filterSelect("COLOR", input.checked, item)
+                          handleChangeFilter("COLOR", input.checked, item)
                         }
-                        checked={filter.colors.includes(item.code)}
                       />
                     </div>
                   ))
@@ -244,9 +241,8 @@ const Catalog = () => {
                       <CheckBox
                         label={item.name}
                         onChange={(input) =>
-                          filterSelect("SIZE", input.checked, item)
+                          handleChangeFilter("SIZE", input.checked, item)
                         }
-                        checked={filter.sizes.includes(item.name)}
                       />
                     </div>
                   ))
@@ -261,11 +257,8 @@ const Catalog = () => {
                   <div className="catalog__filter__widget__content__item">
                     <CheckBox
                       label={itemPrice.label}
-                      onChange={() =>
-                        handleFilterPrice(
-                          itemPrice.minPrice,
-                          itemPrice.maxPrice
-                        )
+                      onChange={(input) =>
+                        handleChangeFilter("PRICE", input.checked, itemPrice)
                       }
                     />
                   </div>
@@ -320,4 +313,4 @@ const Catalog = () => {
   );
 };
 
-export default Catalog;
+export default CatalogTest;

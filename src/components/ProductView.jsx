@@ -4,7 +4,7 @@ import { withRouter } from "react-router";
 // import Button from './Button';
 import { listSize } from "redux/actions/size.actions";
 import { toast } from "react-toastify";
-import { ROOT_URL } from "constant/config";
+import { BASE_URL } from "constant/config";
 import { isEmpty } from "lodash";
 import { addToLocal, getFromLocal } from "common/local-storage";
 import { formatMoney } from "common/common";
@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 const ProductView = (props) => {
   const { product, isLoading, setIsLoading } = props;
   const [previewImg, setPreViewImg] = useState(
-    `${ROOT_URL}/${product?.productImages[0]?.url}`
+    `${BASE_URL}/${product?.productImages[0]?.id}`
   );
   const [descriptionExpand, setDescriptionExpand] = useState(false);
   const [selectedColor, setSelectedColor] = useState(undefined);
@@ -78,10 +78,6 @@ const ProductView = (props) => {
         ...dataVersion,
         currentQuantity: quantity,
       };
-      console.log(
-        "🚀 ~ file: ProductView.jsx:78 ~ useEffect ~ version:",
-        version
-      );
       setInventory(dataVersion?.stockQuantity);
       setSelectedItem({ item: version, product: selectedSize?.product });
     }
@@ -89,10 +85,6 @@ const ProductView = (props) => {
 
   const handleBuy = () => {
     if (!isEmpty(selectedItem)) {
-      console.log(
-        "🚀 ~ file: ProductView.jsx:88 ~ handleBuy ~ selectedItem:",
-        selectedItem
-      );
       addToLocal("cart", selectedItem);
       const carts = getFromLocal("cart");
       emitter.emit("cartQuantityChange", carts);
@@ -118,26 +110,26 @@ const ProductView = (props) => {
           <div
             className="product__images__list__item"
             onClick={() =>
-              setPreViewImg(`${ROOT_URL}/${product?.productImages[0]?.url}`)
+              setPreViewImg(`${BASE_URL}/${product?.productImages[0]?.id}`)
             }
           >
-            <img src={`${ROOT_URL}/${product?.productImages[0]?.url}`} alt="" />
+            <img src={`${BASE_URL}/${product?.productImages[0]?.id}`} alt="" />
           </div>
           <div
             className="product__images__list__item"
             onClick={() =>
-              setPreViewImg(`${ROOT_URL}/${product?.productImages[1]?.url}`)
+              setPreViewImg(`${BASE_URL}/${product?.productImages[1]?.id}`)
             }
           >
-            <img src={`${ROOT_URL}/${product?.productImages[1]?.url}`} alt="" />
+            <img src={`${BASE_URL}/${product?.productImages[1]?.id}`} alt="" />
           </div>
           <div
             className="product__images__list__item"
             onClick={() =>
-              setPreViewImg(`${ROOT_URL}/${product?.productImages[2]?.url}`)
+              setPreViewImg(`${BASE_URL}/${product?.productImages[2]?.id}`)
             }
           >
-            <img src={`${ROOT_URL}/${product?.productImages[2]?.url}`} alt="" />
+            <img src={`${BASE_URL}/${product?.productImages[2]?.id}`} alt="" />
           </div>
         </div>
         <div className="product__images__main">

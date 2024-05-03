@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Button from "./Button";
 import { showModal } from "redux/actions/modal.actions";
-import { ROOT_URL } from "constant/config";
+import { BASE_URL, ROOT_URL } from "constant/config";
 import { formatMoney } from "common/common";
 const ProductCard = (props) => {
   const { product } = props;
@@ -13,13 +13,13 @@ const ProductCard = (props) => {
       <Link to={`/catalog/${product.id}`}>
         <div className="product-card__image">
           <img
-            src={`${ROOT_URL}/${product?.productImages[0]?.url}`}
+            src={`${BASE_URL}/${product?.productImages[0]?.id}`}
             alt={props.name}
             width="100%"
             className="product_img"
           />
           <img
-            src={`${ROOT_URL}/${product?.productImages[1]?.url}`}
+            src={`${BASE_URL}/${product?.productImages[1]?.id}`}
             alt={props.name}
             width="100%"
             className="product_img"

@@ -17,6 +17,7 @@ import OrderPageUser from "pages/profile-page/Order";
 import ChangePassword from "pages/profile-page/ChangePassword";
 import AddressUser from "pages/profile-page/Address";
 import CheckoutRoot from "pages/Checkout/CheckoutRoot";
+import CatalogTest from "pages/CatalogTest";
 
 const Routes = () => {
   return (
@@ -30,7 +31,7 @@ const Routes = () => {
 
       <Route path="/edit-password/profile" component={ChangePassword} />
       <Route path="/catalog/:id" component={Product} />
-      <Route path="/catalog" component={Catalog} />
+      <Route path="/catalog" component={CatalogTest} />
       <Route path="/cart" component={Cart} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />

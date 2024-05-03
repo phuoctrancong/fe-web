@@ -1,8 +1,8 @@
-import axios from '../common/axios';
+import axios from "../common/axios";
 
-import { APIEnum } from 'constant/api.endpoint';
-import { stringify } from 'query-string';
+import { APIEnum } from "constant/api.endpoint";
+import { stringify } from "query-string";
 
 export const list = (query) =>
-	axios.get(`${APIEnum.PRODUCT}/list?${stringify(query)}`);
+  axios.get(`${APIEnum.PRODUCT}?${stringify(query)}`);
 export const detailProduct = (id) => axios.get(`${APIEnum.PRODUCT}/${id}`);
