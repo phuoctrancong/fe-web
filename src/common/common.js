@@ -1,5 +1,6 @@
+// @ts-nocheck
 import * as moment from "moment";
-import { isEqual, isNil, isArray } from "lodash";
+import { isEqual, isNil } from "lodash";
 
 export const formatTime = (time) => moment(time).format("DD/MM/YYYY HH:mm");
 
@@ -56,16 +57,22 @@ export const FILTER_PRICE = [
     maxPrice: 700000,
   },
 ];
+export const SortKey = {
+  PRICE_MAX: "orderPriceMax",
+  PRICE_MIN: "orderPriceMin",
+  CODE: "code",
+  NAME: "name",
+  CREATED_AT: "createdAt",
+};
 export const SORTS = [
-  { value: -1, label: "A -> Z", key: "az" },
-  { value: 1, label: "Z -> A", key: "za" },
-  { value: 1, label: "Price: Low to High", key: "LH" },
-  { value: -1, label: "Price: High to Low", key: "HL" },
+  { label: "Mới nhất", value: `${SortKey.CREATED_AT}` },
+  { label: "Giá: Từ thấp đến cao", value: `${SortKey.PRICE_MIN}` },
+  { label: "Giá: Từ cao đến thấp", value: `${SortKey.PRICE_MAX}` },
 ];
 export const STATUS_ORDER = [
   {
     id: 1,
-    text: "Chở xác nhận",
+    text: "Chờ xác nhận",
     color: "orange",
   },
   {
@@ -199,6 +206,7 @@ export const convertFilterParams = (filters = {}, columns = []) => {
   return JSON.stringify(filterData);
 };
 export const convertSortParams = (sort) => {
+  console.log("🚀 ~ convertSortParams ~ sort:", sort);
   const sortData =
     sort && sort?.orderBy && sort?.order
       ? [
@@ -211,3 +219,4 @@ export const convertSortParams = (sort) => {
 
   return JSON.stringify(sortData);
 };
+export const ROWS_PER_PAGE_OPTIONS = [20, 50, 100];

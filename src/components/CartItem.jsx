@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ROOT_URL } from "constant/config";
+import { BASE_URL, ROOT_URL } from "constant/config";
 import {
   changeQuantityItemInLocal,
   deleteItemInLocal,
@@ -32,7 +32,7 @@ const CartItem = ({
     <div className="cart__item">
       <div className="cart__item__image">
         <img
-          src={`${ROOT_URL}/${product?.product?.productImages[0]?.url}`}
+          src={`${BASE_URL}/${product?.product?.productImages[0]?.id}`}
           alt=""
         />
       </div>

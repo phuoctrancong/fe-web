@@ -15,4 +15,5 @@ export const APIEnum = {
   ORDER: "/orders",
   LOCATION: "/location",
   ADDRESS: "/address",
+  TAG: "/tags",
 };

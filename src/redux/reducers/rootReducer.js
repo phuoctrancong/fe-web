@@ -8,6 +8,7 @@ import sizeReducer from "./size.reducer";
 import cartReducer from "./cart.reducer";
 import orderReducer from "./order.reducer";
 import addressReducer from "./address.reducer";
+import tagReducer from "./tag.reducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   // cart: cartReducer,
   order: orderReducer,
   address: addressReducer,
+  tag: tagReducer,
 });
 
 export default rootReducer;

@@ -7,3 +7,4 @@ export * from "./size.constants";
 export * from "./cart.constants";
 export * from "./order.constants";
 export * from "./address.constants";
+export * from "./tag.constants";

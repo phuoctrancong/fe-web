@@ -2,8 +2,6 @@ import React from "react";
 
 import { Route, Switch } from "react-router-dom";
 
-import Home from "../pages/Home";
-import Catalog from "../pages/Catalog";
 import Cart from "../pages/Cart";
 import Product from "../pages/Product";
 import Contact from "pages/HomePage/Contact";
@@ -18,11 +16,12 @@ import ChangePassword from "pages/profile-page/ChangePassword";
 import AddressUser from "pages/profile-page/Address";
 import CheckoutRoot from "pages/Checkout/CheckoutRoot";
 import CatalogTest from "pages/CatalogTest";
+import HomeTest from "pages/HomeTest";
 
 const Routes = () => {
   return (
     <Switch>
-      <Route path="/" exact component={Home} />
+      <Route path="/" exact component={HomeTest} />
       <Route path="/login" exact component={Login} />
       <Route path="/profile" component={UserProfile} />
       <Route path="/edit/profile" component={EditProfileUser} />

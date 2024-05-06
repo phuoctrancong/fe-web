@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Helmet from "components/Helmet";
 import React, { useEffect, useState } from "react";
 import BannerUserPage from "./BannerUserPage";
@@ -31,6 +32,7 @@ const AddressUser = () => {
   const [page, setPage] = useState(1);
   const [mode, setMode] = useState();
   const [id, setId] = useState();
+  const [loadingAddress, setLoadingAddress] = useState(false);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const state = useSelector((state) => state.address);
@@ -107,6 +109,14 @@ const AddressUser = () => {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  const handleSetDefaultAddress = (id) => {
+    setLoadingAddress(true);
+    dispatch(setDefault(id, () => dispatch(listAddresses({ page, isMe: 1 }))));
+    setTimeout(() => {
+      setLoadingAddress(false);
+    }, 1000);
+  };
   console.log();
   return (
     <Helmet title="Thông tin người dùng - Địa chỉ">
@@ -125,7 +135,6 @@ const AddressUser = () => {
                 className="demo-loadmore-list"
                 loading={!loading}
                 itemLayout="horizontal"
-                // loadMore={loadMore}
                 dataSource={state?.items}
                 pagination={{
                   onChange: (page) => {
@@ -137,15 +146,11 @@ const AddressUser = () => {
                   <List.Item
                     actions={[
                       <Button
-                        onClick={() =>
-                          dispatch(
-                            setDefault(item.id, () =>
-                              dispatch(listAddresses({ page, isMe: 1 }))
-                            )
-                          )
-                        }
+                        loading={item.isDefault ? false : loadingAddress}
+                        disabled={item?.isDefault ? item.isDefault : false}
+                        onClick={() => handleSetDefaultAddress(item.id)}
                       >
-                        Cài đặt mặc định
+                        {item.isDefault ? "Mặc định" : " Cài đặt mặc định"}
                       </Button>,
                       <EditOutlined
                         style={{
@@ -165,11 +170,6 @@ const AddressUser = () => {
                         title={`${item.fullName} || ${item.phone} `}
                         description={`${item.addressLine}`}
                       />
-                      {item.isDefault ? (
-                        <Button type="primary" danger disabled>
-                          Mặc định
-                        </Button>
-                      ) : null}
                     </Skeleton>
                   </List.Item>
                 )}

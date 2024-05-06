@@ -17,9 +17,9 @@ import { isEmpty } from "lodash";
 import { Collapse } from "antd";
 import {
   FILTER_PRICE,
+  SORTS,
+  SortKey,
   convertFilterParams,
-  convertSortParams,
-  transformObjectToSort,
 } from "common/common";
 const { Panel } = Collapse;
 const CatalogTest = () => {
@@ -30,7 +30,6 @@ const CatalogTest = () => {
   const sizeList = useSelector((state) => state.size);
   const [resultsFound, setResultsFound] = useState(true);
   const [keyword, setKeyword] = useState("");
-  const [conditionSort, setSort] = useState({ limit: 8 });
   const [products, setProducts] = useState([]);
   const initFilter = {
     subCategoryIds: [],
@@ -100,13 +99,58 @@ const CatalogTest = () => {
       }
     }
   };
-
+  const [sortOps, setSortOps] = useState([]);
+  const handleSort = (type) => {
+    if (type?.props?.value === SortKey.CREATED_AT) {
+      const newSort = {
+        column: type?.props?.value,
+        order: "DESC",
+      };
+      setSortOps([
+        {
+          ...newSort,
+        },
+      ]);
+    }
+    if (type?.props?.value === SortKey.NAME) {
+      const newSort = {
+        column: type?.props?.value,
+        order: "DESC",
+      };
+      setSortOps([
+        {
+          ...newSort,
+        },
+      ]);
+    }
+    if (type?.props?.value === SortKey.PRICE_MAX) {
+      const newSort = {
+        column: type?.props?.value,
+        order: "DESC",
+      };
+      setSortOps([
+        {
+          ...newSort,
+        },
+      ]);
+    }
+    if (type?.props?.value === SortKey.PRICE_MIN) {
+      const newSort = {
+        column: type?.props?.value,
+        order: "ASC",
+      };
+      setSortOps([
+        {
+          ...newSort,
+        },
+      ]);
+    }
+  };
   useEffect(() => {
     if (!isEmpty(productList)) {
       setProducts(productList);
     }
   }, [products, productList]);
-
   const refreshData = () => {
     const params = {
       keyword: keyword.trim(),
@@ -117,11 +161,7 @@ const CatalogTest = () => {
         minPrice: filterOps.minPrice,
         maxPrice: filterOps.maxPrice,
       }),
-      orderPrice: conditionSort.orderPrice,
-      // sort: convertSortParams({
-      //   sortBy: "code",
-      //   order: "DESC",
-      // }),
+      sort: JSON.stringify(sortOps) || [],
       limit: 8,
     };
     dispatch(listProduct(params));
@@ -131,14 +171,8 @@ const CatalogTest = () => {
   };
   useEffect(() => {
     refreshData();
-  }, [filterOps, keyword, conditionSort, dispatch]);
+  }, [filterOps, sortOps, keyword, dispatch]);
   const clearFilter = () => setFilterOps(initFilter);
-  const handleSortChange = (newSortValue) => {
-    setSort({
-      ...conditionSort,
-      orderPrice: newSortValue,
-    });
-  };
   const updateProducts = useCallback(() => {
     let temp = productList;
     !isEmpty(temp) ? setResultsFound(true) : setResultsFound(false);
@@ -284,10 +318,7 @@ const CatalogTest = () => {
           <div className="catalog__content__sort">
             <div className="row">
               <h4>Sắp xếp theo</h4>
-              <ProductSort
-                current={conditionSort?.orderPrice}
-                onchange={handleSortChange}
-              />
+              <ProductSort options={SORTS} onSort={handleSort} />
             </div>
           </div>
           {resultsFound ? (

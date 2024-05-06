@@ -3,15 +3,13 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { SORTS } from "common/common";
 
-export default function ProductSort({ current, onchange }) {
-  const [value, setValue] = React.useState();
-  const handleSortChange = (e) => {
-    console.log("🚀 ~ ProductSort ~ current:", current);
-    if (onchange) onchange(e.target.value);
+export default function ProductSort({ options, onSort }) {
+  const [character, setCharacter] = React.useState(options[0]);
+  const handleSort = (newState) => {
+    setCharacter(newState);
+    onSort(newState);
   };
-
   return (
     <div>
       <FormControl sx={{ m: 1, minWidth: 200 }}>
@@ -19,12 +17,12 @@ export default function ProductSort({ current, onchange }) {
         <Select
           labelId="demo-simple-select-helper-label"
           id="demo-simple-select-helper"
-          value={current ? current : ""}
+          value={character?.props?.value ? character?.props?.value : ""}
           label="Giá"
-          onChange={handleSortChange}
+          onChange={(event, newValue) => handleSort(newValue)}
         >
-          {SORTS.map((e) => (
-            <MenuItem key={e.key} value={e.value}>
+          {options.map((e) => (
+            <MenuItem key={e.keya} value={e.value}>
               {e.label}
             </MenuItem>
           ))}

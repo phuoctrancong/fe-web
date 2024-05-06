@@ -1,14 +1,13 @@
-import { Skeleton, Space, Spin } from "antd";
+// @ts-nocheck
+
+import { Skeleton, Space } from "antd";
 import Helmet from "components/Helmet";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { detailUserAction } from "redux/actions/auth.actions";
-import CheckoutAddress from "./CheckoutAddress";
 import CheckoutInfo from "./CheckoutInfo";
-import CheckoutMethod from "./CheckoutMethod";
 import { ArrayMethodPayment } from "./checkkout-constants";
-import CheckoutResult from "./CheckoutResult";
 
 const CheckoutRoot = () => {
   const dispatch = useDispatch();
@@ -18,8 +17,8 @@ const CheckoutRoot = () => {
   const [itemCarts, setItemCarts] = useState();
   const [isLoading, setIsLoading] = useState();
   const [id, setId] = useState();
-  const authState = useSelector((state) => {
-    return state.auth;
+  const stateAddress = useSelector((state) => {
+    return state.address;
   });
   useEffect(() => {
     setTimeout(() => {
@@ -36,13 +35,13 @@ const CheckoutRoot = () => {
     }
   }, [dispatch, id]);
   useEffect(() => {
-    const addressDefault = authState?.item?.addresses.find(
+    const addressDefault = stateAddress?.items?.find(
       (e) => e.isDefault === true
     );
     if (addressDefault) {
       setAddressUser(addressDefault);
     }
-  }, [addressUser, authState?.item?.addresses]);
+  }, [addressUser, stateAddress?.items]);
 
   if (isLoading) {
     return (
