@@ -17,6 +17,7 @@ import AddressUser from "pages/profile-page/Address";
 import CheckoutRoot from "pages/Checkout/CheckoutRoot";
 import CatalogTest from "pages/CatalogTest";
 import HomeTest from "pages/HomeTest";
+import ResetPasswrod from "pages/ResetPasswrod";
 
 const Routes = () => {
   return (
@@ -37,6 +38,7 @@ const Routes = () => {
       <Route path="/return-policy" component={ReturnPolicy} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/checkout-root" component={CheckoutRoot} />
+      <Route path="/forgot" component={ResetPasswrod} />
     </Switch>
   );
 };

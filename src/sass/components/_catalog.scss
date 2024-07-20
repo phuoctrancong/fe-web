@@ -56,10 +56,17 @@
       margin-bottom: 2rem;
 
       &__title {
-        font-size: 1.25rem;
+        font-size: 1.65rem;
         font-weight: 600;
         text-transform: capitalize;
         margin-bottom: 16px;
+
+        &__child {
+          font-size: 1.15rem;
+          font-weight: 500;
+          color: #8a93a1;
+          text-transform: capitalize;
+        }
       }
 
       &__content {

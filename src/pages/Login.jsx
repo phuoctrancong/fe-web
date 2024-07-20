@@ -5,7 +5,7 @@ import google from "../assets/images/google.svg";
 import linkedin from "../assets/images/linkedin.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getProfile, login, register } from "../redux/actions/auth.actions";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button, Checkbox, Form, Input, Select, Spin } from "antd";
 const { Option } = Select;
@@ -74,10 +74,11 @@ const Login = (props) => {
     dispatch(
       register(params, () => {
         setLoading(false);
+        setLoginFrom(!loginForm);
+        form.resetFields();
         toast.success("Đăng ký thành công!Bây giờ hãy đăng nhập vào hệ thống.");
       })
     );
-    form.resetFields();
   };
   // @ts-ignore
   if (state.auth?.token) {
@@ -162,17 +163,18 @@ const Login = (props) => {
             <Form
               {...formItemLayout}
               name="register"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
+              labelCol={{ span: 6 }}
+              wrapperCol={{ span: 18 }}
               style={{
                 maxWidth: 600,
+                fontFamily: "Quicksand-Regular",
               }}
               onFinish={handleRegister}
+              form={form}
             >
               <Form.Item
                 name="fullname"
                 label="Họ và tên"
-                tooltip="What do you want others to call you?"
                 rules={[
                   {
                     required: true,
@@ -183,18 +185,17 @@ const Login = (props) => {
               >
                 <Input />
               </Form.Item>
-
               <Form.Item
                 name="email"
                 label="E-mail"
                 rules={[
                   {
                     type: "email",
-                    message: "The input is not valid E-mail!",
+                    message: "Email không hợp lệ!",
                   },
                   {
                     required: true,
-                    message: "Please input your E-mail!",
+                    message: "hãy nhập Email của bạn!",
                   },
                 ]}
               >
@@ -206,7 +207,7 @@ const Login = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input your password!",
+                    message: "hãy nhập mật khẩu!",
                   },
                 ]}
                 hasFeedback
@@ -219,7 +220,7 @@ const Login = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input your phone number!",
+                    message: "Hãy nhập số điện thoại!",
                   },
                 ]}
               >
@@ -247,26 +248,14 @@ const Login = (props) => {
                 </Select>
               </Form.Item>
               <Form.Item
-                name="agreement"
-                valuePropName="checked"
-                rules={[
-                  {
-                    validator: (_, value) =>
-                      value
-                        ? Promise.resolve()
-                        : Promise.reject(
-                            new Error("Bạn chưa đồng ý điều khoản!")
-                          ),
-                  },
-                ]}
                 {...tailFormItemLayout}
+                style={{ textAlign: "center" }}
               >
-                <Checkbox>
-                  Tôi đã đọc <a href="">điều khoản</a>
-                </Checkbox>
-              </Form.Item>
-              <Form.Item {...tailFormItemLayout}>
-                <Button type="primary" htmlType="submit">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ backgroundColor: "#4267b2", textAlign: "center" }}
+                >
                   Đăng ký
                 </Button>
               </Form.Item>
@@ -349,6 +338,9 @@ const Login = (props) => {
               <button className="login__login-container__main-container__form-container__form--submit">
                 Đăng nhập
               </button>
+              {/* <span>
+                <Link to="/forgot">Quên mật khẩu</Link>
+              </span> */}
             </form>
           </div>
         </div>

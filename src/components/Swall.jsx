@@ -1,23 +1,27 @@
-import React, { useState } from "react";
-import SweetAlert2 from "react-sweetalert2";
-const Swall = ({ title, text, isShow }) => {
-  const [swalProps, setSwalProps] = useState({});
-  return (
-    <div>
-      <button
-        onClick={() => {
-          setSwalProps({
-            show: isShow,
-            title: title,
-            text: text,
-          });
-        }}
-      >
-        Open
-      </button>
-      <SweetAlert2 {...swalProps} />
-    </div>
-  );
-};
+// SweetAlert.js
+import React, { forwardRef, useImperativeHandle, useState } from "react";
+import Swal from "sweetalert2";
 
-export default Swall;
+const SweetAlert = forwardRef((props, ref) => {
+  useImperativeHandle(ref, () => ({
+    showAlert(options) {
+      Swal.fire({
+        ...options,
+        didOpen: () => {
+          if (options.onOpen) {
+            options.onOpen();
+          }
+        },
+        didClose: () => {
+          if (options.onClose) {
+            options.onClose();
+          }
+        },
+      });
+    },
+  }));
+
+  return null;
+});
+
+export default SweetAlert;

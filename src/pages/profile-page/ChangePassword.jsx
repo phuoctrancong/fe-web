@@ -1,52 +1,57 @@
-import { Form, Input } from "antd";
-import Button from "components/Button";
+import { Button, Form, Input } from "antd";
 import Helmet from "components/Helmet";
 import { BASE_URL } from "constant/config";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { changePassword, getProfile } from "redux/actions/auth.actions";
+import { changePassword, getProfile, logout } from "redux/actions/auth.actions";
 import BannerUserPage from "./BannerUserPage";
 import MenuListUserInfo from "./MenuListUserInfo";
 
 const ChangePassword = () => {
-  const MODE = {
-    OLD_PASSWORD: "OLD_PASSWORD",
-    NEW_PASSWORD: "NEW_PASSWORD",
-  };
   const [changeInfo, setChangeInfo] = useState(false);
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [isShowPassword, setIsShowPassword] = useState(false);
-  const [isShowPasswordOld, setIsShowPasswordOld] = useState(false);
-  const [mode, setMode] = useState("");
-  const resetForm = () => {
-    setOldPassword("");
-    setNewPassword("");
-  };
+  const [user, setUser] = useState({});
   const dispatch = useDispatch();
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, [changeInfo]);
+  const [form] = Form.useForm();
+  useEffect(() => {
+    form.setFieldsValue({
+      password: user?.password,
+    });
+  }, [form, user]);
 
-  const validateForm = () => {
-    let isFail = {
-      isOldPassword: false,
-      isNewPassword: false,
-    };
-    if (oldPassword.trim().length === 0) {
-      isFail = {
-        ...isFail,
-        isOldPassword: true,
-      };
-    }
-    if (newPassword.trim().length === 0) {
-      isFail = {
-        ...isFail,
-        isNewPassword: true,
-      };
-    }
-    if (isFail.isNewPassword || isFail.isOldPassword) {
-      toast.error("Vui lòng nhập đủ thông tin");
-      return;
-    }
+  const resetForm = () => {
+    form.resetFields();
+  };
+  const onFinish = (values) => {
+    const { oldPassword, password: newPassword } = values;
+    dispatch(
+      changePassword(
+        {
+          email: user?.email,
+          oldPassword,
+          password: newPassword,
+        },
+        () => {
+          dispatch(getProfile(() => setChangeInfo(!changeInfo)));
+          resetForm();
+          toast.success("Thay đổi mật khẩu thành công");
+
+          // Log the user out and notify them to log in again
+          dispatch(logout());
+          toast.info("Mật khẩu đã thay đổi. Vui lòng đăng nhập lại.");
+          // Redirect to login page or reload
+          setTimeout(() => {
+            window.location.href = "/login"; // or another appropriate login URL
+          }, 2000);
+        }
+      )
+    );
+  };
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
   };
   return (
     <Helmet title="Đổi mật khẩu">
@@ -60,46 +65,6 @@ const ChangePassword = () => {
                 <h4>Đổi mật khẩu</h4>
               </div>
               <div className="user__content__info__form">
-                {/* <div className='user__content__info__form__group'>
-									<label htmlFor=''>Mật khẩu cũ</label>
-									<input
-										type={isShowPasswordOld ? 'text' : 'password'}
-										placeholder='Nhập mật khẩu cũ...'
-										value={oldPassword}
-										onChange={(e) => setOldPassword(e.target.value)}
-										onBlur={validateForm}
-									/>
-									<span
-										className='user__content__info__form__group--show'
-										onClick={() => setIsShowPasswordOld(!isShowPasswordOld)}
-									>
-										<i
-											className={
-												isShowPasswordOld ? 'bx bx-show' : 'bx bx-low-vision'
-											}
-										></i>
-									</span>
-								</div>
-								<div className='user__content__info__form__group'>
-									<label htmlFor=''>Mật khẩu mới</label>
-									<input
-										type={isShowPassword ? 'text' : 'password'}
-										placeholder='Nhập mật khẩu mới'
-										value={newPassword}
-										onChange={(e) => setNewPassword(e.target.value)}
-										onBlur={validateForm}
-									/>
-									<span
-										className='user__content__info__form__group--show'
-										onClick={() => setIsShowPassword(!isShowPassword)}
-									>
-										<i
-											className={
-												isShowPassword ? 'bx bx-show' : 'bx bx-low-vision'
-											}
-										></i>
-									</span>
-								</div> */}
                 <Form
                   name="basic"
                   labelCol={{
@@ -114,13 +79,14 @@ const ChangePassword = () => {
                   initialValues={{
                     remember: true,
                   }}
-                  // onFinish={onFinish}
-                  // onFinishFailed={onFinishFailed}
+                  onFinish={onFinish}
+                  onFinishFailed={onFinishFailed}
                   autoComplete="off"
+                  form={form}
                 >
                   <Form.Item
                     label="Mật khẩu cũ"
-                    name="passwordOld"
+                    name="oldPassword"
                     rules={[
                       {
                         required: true,
@@ -133,7 +99,7 @@ const ChangePassword = () => {
 
                   <Form.Item
                     label="Mật khẩu mới"
-                    name="passwordNew"
+                    name="password"
                     rules={[
                       {
                         required: true,
@@ -144,47 +110,13 @@ const ChangePassword = () => {
                     <Input.Password />
                   </Form.Item>
 
-                  <Form.Item
-                    name="remember"
-                    valuePropName="checked"
-                    wrapperCol={{
-                      offset: 8,
-                      span: 16,
-                    }}
-                  ></Form.Item>
-
-                  <Form.Item
-                    wrapperCol={{
-                      offset: 8,
-                      span: 16,
-                    }}
-                  >
-                    {/* <Button type="primary" htmlType="submit">
-                      Submit
-                    </Button> */}
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                      Lưu
+                    </Button>
                   </Form.Item>
                 </Form>
               </div>
-              <Button
-                size="sm"
-                onClick={() => {
-                  dispatch(
-                    changePassword(
-                      {
-                        oldPassword,
-                        newPassword,
-                      },
-                      () => {
-                        dispatch(getProfile(() => setChangeInfo(!changeInfo)));
-                        resetForm();
-                        toast.success("Thay đổi mật khẩu thành công");
-                      }
-                    )
-                  );
-                }}
-              >
-                Lưu
-              </Button>
             </div>
           </div>
         </div>

@@ -276,7 +276,11 @@ const CheckoutInfo = (props) => {
                     <Button
                       size="large"
                       type="primary"
-                      style={{ width: "100%", marginTop: "25px" }}
+                      style={{
+                        width: "100%",
+                        marginTop: "25px",
+                        backgroundColor: "#4267b2",
+                      }}
                       onClick={handleCheckout}
                     >
                       Đặt hàng

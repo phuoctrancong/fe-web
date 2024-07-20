@@ -21,6 +21,7 @@ import {
   SortKey,
   convertFilterParams,
 } from "common/common";
+import { CaretRightOutlined } from "@ant-design/icons";
 const { Panel } = Collapse;
 const CatalogTest = () => {
   const dispatch = useDispatch();
@@ -203,18 +204,35 @@ const CatalogTest = () => {
             <div className="catalog__filter__widget__title">
               danh mục sản phẩm
             </div>
-            <div className="catalog__filter__widget__content">
+            <div className="catalog__filter__widget">
               {categoryList?.items.map((item) => {
                 return (
                   <Collapse
+                    defaultActiveKey={["1", "2", "3", "4"]}
+                    expandIconPosition="end"
+                    expandIcon={({ isActive }) => (
+                      <CaretRightOutlined
+                        rotate={isActive ? 90 : 0}
+                        style={{
+                          fontSize: "14px",
+                          color: "#8a93a1",
+                          fontWeight: 300,
+                        }}
+                      />
+                    )}
                     bordered={false}
-                    defaultActiveKey={[item.id.toString()]} // Use the categoryId as the defaultActiveKey
-                    onChange={() => {
-                      dispatch(listProduct({ categoryId: item.id }));
-                    }}
                   >
                     <Panel
-                      header={<span>{item.name}</span>}
+                      header={
+                        <div
+                          onClick={() => {
+                            dispatch(listProduct({ categoryId: item.id }));
+                          }}
+                          className="catalog__filter__widget__title__child"
+                        >
+                          {item?.name}
+                        </div>
+                      }
                       key={item.id.toString()} // Use the categoryId as the key
                       style={{
                         paddingLeft: 24,
@@ -223,17 +241,19 @@ const CatalogTest = () => {
                       }}
                     >
                       {item.subCategories?.map((itemChild) => (
-                        <div className="catalog__filter__widget__content__item">
-                          <CheckBox
-                            label={itemChild.name}
-                            onChange={(input) =>
-                              handleChangeFilter(
-                                "CATEGORY",
-                                input.checked,
-                                itemChild
-                              )
-                            }
-                          />
+                        <div className="catalog__filter__widget__content">
+                          <div className="catalog__filter__widget__content__item">
+                            <CheckBox
+                              label={itemChild.name}
+                              onChange={(input) =>
+                                handleChangeFilter(
+                                  "CATEGORY",
+                                  input.checked,
+                                  itemChild
+                                )
+                              }
+                            />
+                          </div>
                         </div>
                       ))}
                     </Panel>
@@ -243,64 +263,110 @@ const CatalogTest = () => {
             </div>
           </div>
           <div className="catalog__filter__widget">
-            <div className="catalog__filter__widget__title">Màu sắc</div>
-            <div className="catalog__filter__widget__content">
-              {colorList?.items?.length
-                ? colorList?.items?.map((item, index) => (
-                    <div
-                      key={index}
-                      className="catalog__filter__widget__content__item"
-                      style={{ marginBottom: "13px" }}
-                    >
-                      <CheckBox
-                        label={item.name}
-                        onChange={(input) =>
-                          handleChangeFilter("COLOR", input.checked, item)
-                        }
-                      />
-                    </div>
-                  ))
-                : ""}
-            </div>
-          </div>
-          <div className="catalog__filter__widget">
-            <div className="catalog__filter__widget__title">kích cỡ</div>
-            <div className="catalog__filter__widget__content">
-              {sizeList?.items?.length
-                ? sizeList?.items?.map((item, index) => (
-                    <div
-                      key={index}
-                      className="catalog__filter__widget__content__item"
-                    >
-                      <CheckBox
-                        label={item.name}
-                        onChange={(input) =>
-                          handleChangeFilter("SIZE", input.checked, item)
-                        }
-                      />
-                    </div>
-                  ))
-                : ""}
-            </div>
-          </div>
-          <div className="catalog__filter__widget">
-            <div className="catalog__filter__widget__title">Khoảng giá:</div>
-            <div className="catalog__filter__widget__content">
-              {FILTER_PRICE.map((itemPrice) => (
-                <>
-                  <div className="catalog__filter__widget__content__item">
-                    <CheckBox
-                      label={itemPrice.label}
-                      onChange={(input) =>
-                        handleChangeFilter("PRICE", input.checked, itemPrice)
-                      }
-                    />
+            <div className="catalog__filter__widget__title">Bộ lọc</div>
+            <Collapse
+              defaultActiveKey={["1", "2", "3", "4"]}
+              expandIconPosition="end"
+              expandIcon={({ isActive }) => (
+                <CaretRightOutlined
+                  rotate={isActive ? 90 : 0}
+                  style={{
+                    fontSize: "14px",
+                    color: "#8a93a1",
+                    fontWeight: 300,
+                  }}
+                />
+              )}
+              bordered={false}
+            >
+              <Panel
+                header={
+                  <div className="catalog__filter__widget__title__child">
+                    Màu sắc
                   </div>
-                </>
-              ))}
-            </div>
+                }
+                key={1}
+              >
+                <div className="catalog__filter__widget">
+                  <div className="catalog__filter__widget__content">
+                    {colorList?.items?.length
+                      ? colorList?.items?.map((item, index) => (
+                          <div
+                            key={index}
+                            className="catalog__filter__widget__content__item"
+                            style={{ marginBottom: "13px" }}
+                          >
+                            <CheckBox
+                              label={item.name}
+                              onChange={(input) =>
+                                handleChangeFilter("COLOR", input.checked, item)
+                              }
+                            />
+                          </div>
+                        ))
+                      : ""}
+                  </div>
+                </div>
+              </Panel>
+              <Panel
+                header={
+                  <div className="catalog__filter__widget__title__child">
+                    kích cỡ
+                  </div>
+                }
+                key={2}
+              >
+                <div className="catalog__filter__widget">
+                  <div className="catalog__filter__widget__content">
+                    {sizeList?.items?.length
+                      ? sizeList?.items?.map((item, index) => (
+                          <div
+                            key={index}
+                            className="catalog__filter__widget__content__item"
+                          >
+                            <CheckBox
+                              label={item.name}
+                              onChange={(input) =>
+                                handleChangeFilter("SIZE", input.checked, item)
+                              }
+                            />
+                          </div>
+                        ))
+                      : ""}
+                  </div>
+                </div>
+              </Panel>
+              <Panel
+                header={
+                  <div className="catalog__filter__widget__title__child">
+                    Khoảng giá
+                  </div>
+                }
+                key={3}
+              >
+                <div className="catalog__filter__widget">
+                  <div className="catalog__filter__widget__content">
+                    {FILTER_PRICE.map((itemPrice) => (
+                      <>
+                        <div className="catalog__filter__widget__content__item">
+                          <CheckBox
+                            label={itemPrice.label}
+                            onChange={(input) =>
+                              handleChangeFilter(
+                                "PRICE",
+                                input.checked,
+                                itemPrice
+                              )
+                            }
+                          />
+                        </div>
+                      </>
+                    ))}
+                  </div>
+                </div>
+              </Panel>
+            </Collapse>
           </div>
-
           <div className="catalog__filter__widget">
             <div className="catalog__filter__widget__content">
               <Button size="sm" onClick={clearFilter}>

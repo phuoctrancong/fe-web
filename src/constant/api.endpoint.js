@@ -4,7 +4,7 @@ export const APIEnum = {
   PROFILE: "/auth/profile",
   GET_TOKEN: "/auth/token",
   UPDATE_USER: "/auth/update",
-  CHANGE_PASSWORD: "/auth/update-pasword",
+  CHANGE_PASSWORD: "/users/change-password",
   CATEGORY: "/categories",
   COLOR: "/colors",
   SIZE: "/sizes",

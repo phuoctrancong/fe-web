@@ -7,6 +7,7 @@ import {
   update,
 } from "service/address.service";
 import * as types from "../constants";
+import { toast } from "react-toastify";
 export const listAddresses = (query) => {
   return async (dispatch) => {
     try {
@@ -29,25 +30,15 @@ export const createAddress = (data, cb) => {
   return async (dispatch) => {
     try {
       const response = await create(data);
-
       if (response.statusCode !== 200) {
-        notification.open({
-          message: "Thất bại",
-          description: response.message,
-        });
+        toast.error("");
       } else {
-        notification.open({
-          message: "Thành công",
-          description: response.message,
-        });
-        cb();
+        toast.success(response?.message);
       }
     } catch (error) {
       console.log(error?.message || error);
-      notification.open({
-        message: "Thất bại",
-        description: error?.message || error,
-      });
+      toast.success(error?.message || error);
+      toast.success(error?.message || error);
     }
   };
 };
@@ -58,23 +49,14 @@ export const updateAddress = (id, data, cb) => {
       const response = await update(id, data);
 
       if (response.statusCode !== 200) {
-        notification.open({
-          message: "Thất bại",
-          description: response.message,
-        });
+        toast.error(response?.message);
       } else {
-        notification.open({
-          message: "Thành công",
-          description: response.message,
-        });
+        toast.success(response?.message);
         cb();
       }
     } catch (error) {
       console.log(error?.message || error);
-      notification.open({
-        message: "Thất bại",
-        description: error?.message || error,
-      });
+      toast.error(error?.message || error);
     }
   };
 };
@@ -91,6 +73,7 @@ export const setDefault = (id, onSuccess) => {
       dispatch({
         type: types.SET_DEFAULT_ADDRESS,
       });
+      toast.success(response?.message);
       onSuccess();
     }
   };

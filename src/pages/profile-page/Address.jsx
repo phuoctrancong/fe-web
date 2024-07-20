@@ -25,6 +25,7 @@ import {
 } from "redux/actions/address.action";
 import { useSelector } from "react-redux";
 import { EditOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 const loading = true;
 const AddressUser = () => {
   const { TextArea } = Input;
@@ -78,16 +79,17 @@ const AddressUser = () => {
     switch (mode) {
       case "CREATE":
         dispatch(
-          createAddress(values, () =>
-            dispatch(listAddresses({ page, isMe: 1 }))
-          )
+          createAddress(values, () => {
+            dispatch(listAddresses({ page, isMe: 1 }));
+            toast.success("Tạo địa chỉ thành công");
+          })
         );
         break;
       case "UPDATE":
         dispatch(
-          updateAddress(id, values, () =>
-            dispatch(listAddresses({ page, isMe: 1 }))
-          )
+          updateAddress(id, values, () => {
+            dispatch(listAddresses({ page, isMe: 1 }));
+          })
         );
         break;
       default:
@@ -127,7 +129,11 @@ const AddressUser = () => {
             <MenuListUserInfo />
             <div className="col l-8 m-8 c-12 user__content__address">
               <Space style={{ marginBottom: 20 }}>
-                <Button type="primary" onClick={showModal}>
+                <Button
+                  type="primary"
+                  onClick={showModal}
+                  style={{ backgroundColor: "#4267b2" }}
+                >
                   Tạo mới
                 </Button>
               </Space>
