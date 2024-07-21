@@ -32,6 +32,7 @@ const Cart = () => {
         0
       )
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getFromLocal("cart")]);
   return (
     <Helmet title="Giỏ hàng">
